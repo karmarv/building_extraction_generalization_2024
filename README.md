@@ -1,16 +1,15 @@
-# building_extraction_generalization_2024
-IEEE Bigdata Cup 2024: Building extraction - IEEE BigData Cup Challenge 2024: Cross-City Generalizability of Instance Segmentation Model in a Nationwide Building Extraction Task
-
+# IEEE Bigdata Cup 2024: Building extraction
+IEEE BigData Cup Challenge 2024: Cross-City Generalizability of Instance Segmentation Model in a Nationwide Building Extraction Task
 - Link: https://www.kaggle.com/competitions/building-extraction-generalization-2024/overview
 
 ### Results
 - Inference
   ```bash
-
-  ```
+  
+  ``` 
 
 ### Experiments
-Strategy
+Strategy 
 - Identify a set of models for instance segmentation [MMDetection](https://mmdetection.readthedocs.io/en/latest/user_guides/train.html#train-with-customized-datasets)
   - RTMDet-Instance
   - Approach [TTA](https://mmdetection.readthedocs.io/en/latest/user_guides/test.html?highlight=TTA#test-time-augmentation-tta) - https://github.com/open-mmlab/mmdetection/blob/main/configs/rtmdet/rtmdet_tta.py
@@ -22,7 +21,7 @@ Strategy
 
 
 ### Environment
-- Python 3.8.18 Installation via Miniconda v23.1.0 - https://docs.conda.io/projects/miniconda/en/latest/
+- Python 3.8.18 Installation via Miniconda v23.1.0 - https://docs.conda.io/projects/miniconda/en/latest/ 
   ```bash
   conda env remove -n segm
   conda create -n segm python=3.9
@@ -48,5 +47,5 @@ Strategy
 - Preparation
   - COCO format
   ```bash
-
+  
   ```
