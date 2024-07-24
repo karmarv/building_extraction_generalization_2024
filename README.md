@@ -21,7 +21,7 @@ Strategy
 
 
 ### Environment
-- Python 3.8.18 Installation via Miniconda v23.1.0 - https://docs.conda.io/projects/miniconda/en/latest/ 
+- Python 3.9 Installation via Miniconda - https://docs.conda.io/projects/miniconda/en/latest/ 
   ```bash
   conda env remove -n segm
   conda create -n segm python=3.9
@@ -31,7 +31,7 @@ Strategy
 - MMDetection environment
   ```bash
   pip install -U openmim wandb future tensorboard prettytable
-  mim install "mmengine>=0.6.0" "mmcv>=2.0.0"
+  mim install "mmengine>=0.6.0" "mmcv>=2.0.0rc4, <2.2.0"
   mim install albumentations --no-binary qudida,albumentations
   ```
 - MMDetection installation
@@ -40,10 +40,26 @@ Strategy
   cd model/mmdetection
   pip install -v -e .
   ```
+- Kaggle CLI `pip install kaggle` - https://www.kaggle.com/docs/api#getting-started-installation-&-authentication
+  - Obtain the kaggle.json by generating new token from accounts and place at ~/.kaggle/ path
+  - Dataset download using `kaggle competitions download -c building-extraction-generalization-2024`
+  
 
 ### Dataset
 - Download data from [Kaggle ](https://www.kaggle.com/competitions/building-extraction-generalization-2024/data)
-
+  ```bash
+  tree -L 2 .
+  .
+  ├── sample_submission.csv
+  ├── test
+  │   └── image
+  ├── train
+  │   ├── image
+  │   └── train.json
+  └── val
+      ├── image
+      └── val.json
+  ```
 - Preparation
   - COCO format
   ```bash
