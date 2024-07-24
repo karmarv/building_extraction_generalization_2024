@@ -3,7 +3,7 @@
 #### Run - RTMDet-M-Instance
 ```
 # Multi 3 GPU # XXX hours for b16 100 epochs
-CUDA_VISIBLE_DEVICES=4,6,7 PORT=29601 ./tools/dist_train.sh rtmdet_ins_m_beg24.py 3
+CUDA_VISIBLE_DEVICES=4,6,7 PORT=29601 ./tools/dist_train.sh rtmdet_ins_m_beg.py 3
 ```
 > 07/24 15:33:25 --> 
 - training logs

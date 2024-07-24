@@ -18,7 +18,7 @@ max_epochs = 100
 interval = 5
 stage2_num_epochs = 20
 # Batch size of a single GPU during training
-train_batch_size_per_gpu = 16
+train_batch_size_per_gpu = 12
 val_batch_size_per_gpu = train_batch_size_per_gpu
 
 # -----data related-----
