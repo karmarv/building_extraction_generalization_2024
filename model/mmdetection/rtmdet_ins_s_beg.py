@@ -1,4 +1,4 @@
-_base_ = "./configs/rtmdet/rtmdet-ins_l_8xb32-300e_coco.py"
+_base_ = "./configs/rtmdet/rtmdet-ins_s_8xb32-300e_coco.py"
 
 #
 # https://mmengine.readthedocs.io/en/latest/api/visualization.html
@@ -14,11 +14,11 @@ dict(type='WandbVisBackend', init_kwargs={
 # Train & Val - https://github.com/open-mmlab/mmdetection/blob/main/demo/MMDet_InstanceSeg_Tutorial.ipynb
 #
 
-max_epochs = 200
+max_epochs = 300
 interval = 5
 stage2_num_epochs = 20
 # Batch size of a single GPU during training
-train_batch_size_per_gpu = 8
+train_batch_size_per_gpu = 12
 val_batch_size_per_gpu = train_batch_size_per_gpu
 
 # -----data related-----
@@ -40,7 +40,7 @@ metainfo = dict(classes=class_names, palette=[[255,200,200]])
 
 
 # load COCO pre-trained weight
-load_from = 'https://download.openmmlab.com/mmdetection/v3.0/rtmdet/rtmdet_l_8xb32-300e_coco/rtmdet_l_8xb32-300e_coco_20220719_112030-5a0be7c4.pth'  # noqa
+load_from = 'https://download.openmmlab.com/mmdetection/v3.0/rtmdet/rtmdet-ins_s_8xb32-300e_coco/rtmdet-ins_s_8xb32-300e_coco_20221121_212604-fdc5d7ec.pth'  # noqa
 
 train_cfg = dict(
     max_epochs=max_epochs,
@@ -50,7 +50,9 @@ train_cfg = dict(
 # We also need to change the num_classes in head to match the dataset's annotation
 model = dict(
     bbox_head=dict(
-        num_classes=num_classes
+        num_classes=num_classes,
+        in_channels=128, 
+        feat_channels=128
         )
     )
 
@@ -66,7 +68,7 @@ train_pipeline = [
     dict(
         type='RandomResize',
         scale=(1280, 1280),
-        ratio_range=(0.1, 2.0),
+        ratio_range=(0.5, 2.0),
         keep_ratio=True),
     dict(
         type='RandomCrop',
@@ -83,6 +85,30 @@ train_pipeline = [
         max_cached_images=20,
         pad_val=(114, 114, 114)),
     dict(type='FilterAnnotations', min_gt_bbox_wh=(1, 1)),
+    dict(type='PackDetInputs')
+]
+
+train_pipeline_stage2 = [
+    dict(type='LoadImageFromFile', backend_args={{_base_.backend_args}}),
+    dict(
+        type='LoadAnnotations',
+        with_bbox=True,
+        with_mask=True,
+        poly2mask=False),
+    dict(
+        type='RandomResize',
+        scale=(640, 640),
+        ratio_range=(0.5, 2.0),
+        keep_ratio=True),
+    dict(
+        type='RandomCrop',
+        crop_size=(640, 640),
+        recompute_bbox=True,
+        allow_negative_crop=True),
+    dict(type='FilterAnnotations', min_gt_bbox_wh=(1, 1)),
+    dict(type='YOLOXHSVRandomAug'),
+    dict(type='RandomFlip', prob=0.5),
+    dict(type='Pad', size=(640, 640), pad_val=dict(img=(114, 114, 114))),
     dict(type='PackDetInputs')
 ]
 
@@ -105,7 +131,6 @@ val_dataloader = dict(
 test_dataloader = val_dataloader
 
 
-
 # Modify metric related settings
 val_evaluator = dict(ann_file=data_root + val_ann_file, classwise=True, metric=['bbox', 'segm'])
 test_evaluator = val_evaluator
@@ -114,34 +139,16 @@ test_evaluator = val_evaluator
 default_hooks = dict(
     checkpoint=dict(
         interval=interval,
-        max_keep_ckpts=10  # only keep latest checkpoints
+        max_keep_ckpts=50  # only keep latest checkpoints
     ))
 
-
-train_pipeline_stage2 = [
-    dict(type='LoadImageFromFile', backend_args={{_base_.backend_args}}),
-    dict(
-        type='LoadAnnotations',
-        with_bbox=True,
-        with_mask=True,
-        poly2mask=False),
-    dict(
-        type='RandomResize',
-        scale=(640, 640),
-        ratio_range=(0.1, 2.0),
-        keep_ratio=True),
-    dict(
-        type='RandomCrop',
-        crop_size=(640, 640),
-        recompute_bbox=True,
-        allow_negative_crop=True),
-    dict(type='FilterAnnotations', min_gt_bbox_wh=(1, 1)),
-    dict(type='YOLOXHSVRandomAug'),
-    dict(type='RandomFlip', prob=0.5),
-    dict(type='Pad', size=(640, 640), pad_val=dict(img=(114, 114, 114))),
-    dict(type='PackDetInputs')
-]
 custom_hooks = [
+    dict(
+        type='EMAHook',
+        ema_type='ExpMomentumEMA',
+        momentum=0.0002,
+        update_buffers=True,
+        priority=49),
     dict(
         type='PipelineSwitchHook',
         switch_epoch=max_epochs - stage2_num_epochs,
