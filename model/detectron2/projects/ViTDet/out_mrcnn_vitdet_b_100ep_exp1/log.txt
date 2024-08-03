@@ -1,0 +1,610 @@
+[08/02 22:27:47] detectron2 INFO: Rank of current process: 0. World size: 1
+[08/02 22:27:51] detectron2 INFO: Environment info:
+-------------------------------  -----------------------------------------------------------------------------------------------------------
+sys.platform                     linux
+Python                           3.9.19 (main, May  6 2024, 19:43:03) [GCC 11.2.0]
+numpy                            1.26.4
+detectron2                       0.6 @/home/rahul/workspace/vision/beg24/building_extraction_generalization_2024/model/detectron2/detectron2
+Compiler                         GCC 9.4
+CUDA compiler                    CUDA 11.6
+detectron2 arch flags            8.6
+DETECTRON2_ENV_MODULE            <not set>
+PyTorch                          1.13.1+cu116 @/home/rahul/miniconda/envs/segm/lib/python3.9/site-packages/torch
+PyTorch debug build              False
+torch._C._GLIBCXX_USE_CXX11_ABI  False
+GPU available                    Yes
+GPU 0                            NVIDIA RTX A6000 (arch=8.6)
+Driver version                   515.65.01
+CUDA_HOME                        /usr
+Pillow                           10.4.0
+torchvision                      0.14.1+cu116 @/home/rahul/miniconda/envs/segm/lib/python3.9/site-packages/torchvision
+torchvision arch flags           3.5, 5.0, 6.0, 7.0, 7.5, 8.0, 8.6
+fvcore                           0.1.5.post20221221
+iopath                           0.1.9
+cv2                              4.10.0
+-------------------------------  -----------------------------------------------------------------------------------------------------------
+PyTorch built with:
+  - GCC 9.3
+  - C++ Version: 201402
+  - Intel(R) Math Kernel Library Version 2020.0.0 Product Build 20191122 for Intel(R) 64 architecture applications
+  - Intel(R) MKL-DNN v2.6.0 (Git Hash 52b5f107dd9cf10910aaa19cb47f3abf9b349815)
+  - OpenMP 201511 (a.k.a. OpenMP 4.5)
+  - LAPACK is enabled (usually provided by MKL)
+  - NNPACK is enabled
+  - CPU capability usage: AVX2
+  - CUDA Runtime 11.6
+  - NVCC architecture flags: -gencode;arch=compute_37,code=sm_37;-gencode;arch=compute_50,code=sm_50;-gencode;arch=compute_60,code=sm_60;-gencode;arch=compute_70,code=sm_70;-gencode;arch=compute_75,code=sm_75;-gencode;arch=compute_80,code=sm_80;-gencode;arch=compute_86,code=sm_86
+  - CuDNN 8.3.2  (built against CUDA 11.5)
+  - Magma 2.6.1
+  - Build settings: BLAS_INFO=mkl, BUILD_TYPE=Release, CUDA_VERSION=11.6, CUDNN_VERSION=8.3.2, CXX_COMPILER=/opt/rh/devtoolset-9/root/usr/bin/c++, CXX_FLAGS= -fabi-version=11 -Wno-deprecated -fvisibility-inlines-hidden -DUSE_PTHREADPOOL -fopenmp -DNDEBUG -DUSE_KINETO -DUSE_FBGEMM -DUSE_QNNPACK -DUSE_PYTORCH_QNNPACK -DUSE_XNNPACK -DSYMBOLICATE_MOBILE_DEBUG_HANDLE -DEDGE_PROFILER_USE_KINETO -O2 -fPIC -Wno-narrowing -Wall -Wextra -Werror=return-type -Werror=non-virtual-dtor -Wno-missing-field-initializers -Wno-type-limits -Wno-array-bounds -Wno-unknown-pragmas -Wunused-local-typedefs -Wno-unused-parameter -Wno-unused-function -Wno-unused-result -Wno-strict-overflow -Wno-strict-aliasing -Wno-error=deprecated-declarations -Wno-stringop-overflow -Wno-psabi -Wno-error=pedantic -Wno-error=redundant-decls -Wno-error=old-style-cast -fdiagnostics-color=always -faligned-new -Wno-unused-but-set-variable -Wno-maybe-uninitialized -fno-math-errno -fno-trapping-math -Werror=format -Werror=cast-function-type -Wno-stringop-overflow, LAPACK_INFO=mkl, PERF_WITH_AVX=1, PERF_WITH_AVX2=1, PERF_WITH_AVX512=1, TORCH_VERSION=1.13.1, USE_CUDA=ON, USE_CUDNN=ON, USE_EXCEPTION_PTR=1, USE_GFLAGS=OFF, USE_GLOG=OFF, USE_MKL=ON, USE_MKLDNN=ON, USE_MPI=OFF, USE_NCCL=ON, USE_NNPACK=ON, USE_OPENMP=ON, USE_ROCM=OFF, 
+
+[08/02 22:27:51] detectron2 INFO: Command line arguments: Namespace(config_file='configs/COCO/mask_rcnn_vitdet_b_100ep_beg.py', resume=False, eval_only=False, num_gpus=1, num_machines=1, machine_rank=0, dist_url='tcp://127.0.0.1:50153', opts=[])
+[08/02 22:27:51] detectron2 INFO: Contents of args.config_file=configs/COCO/mask_rcnn_vitdet_b_100ep_beg.py:
+[38;5;204mfrom[39m[38;5;15m [39m[38;5;15mfunctools[39m[38;5;15m [39m[38;5;204mimport[39m[38;5;15m [39m[38;5;15mpartial[39m
+[38;5;204mfrom[39m[38;5;15m [39m[38;5;15mfvcore[39m[38;5;15m.[39m[38;5;15mcommon[39m[38;5;15m.[39m[38;5;15mparam_scheduler[39m[38;5;15m [39m[38;5;204mimport[39m[38;5;15m [39m[38;5;15mMultiStepParamScheduler[39m
+
+[38;5;204mfrom[39m[38;5;15m [39m[38;5;15mdetectron2[39m[38;5;15m [39m[38;5;204mimport[39m[38;5;15m [39m[38;5;15mmodel_zoo[39m
+[38;5;204mfrom[39m[38;5;15m [39m[38;5;15mdetectron2[39m[38;5;15m.[39m[38;5;15mconfig[39m[38;5;15m [39m[38;5;204mimport[39m[38;5;15m [39m[38;5;15mLazyCall[39m[38;5;15m [39m[38;5;81mas[39m[38;5;15m [39m[38;5;15mL[39m
+[38;5;204mfrom[39m[38;5;15m [39m[38;5;15mdetectron2[39m[38;5;15m.[39m[38;5;15msolver[39m[38;5;15m [39m[38;5;204mimport[39m[38;5;15m [39m[38;5;15mWarmupParamScheduler[39m
+[38;5;204mfrom[39m[38;5;15m [39m[38;5;15mdetectron2[39m[38;5;15m.[39m[38;5;15mmodeling[39m[38;5;15m.[39m[38;5;15mbackbone[39m[38;5;15m.[39m[38;5;15mvit[39m[38;5;15m [39m[38;5;204mimport[39m[38;5;15m [39m[38;5;15mget_vit_lr_decay_rate[39m
+
+[38;5;204mfrom[39m[38;5;15m [39m[38;5;15m.[39m[38;5;15m.[39m[38;5;15mcommon[39m[38;5;15m.[39m[38;5;15mcoco_loader_lsj[39m[38;5;15m [39m[38;5;204mimport[39m[38;5;15m [39m[38;5;15mdataloader[39m
+
+[38;5;186m"""[39m
+[38;5;186m1. Setup Dataset in COCO format[39m
+[38;5;186m"""[39m
+[38;5;204mimport[39m[38;5;15m [39m[38;5;15mos[39m
+[38;5;15mdata_root[39m[38;5;15m [39m[38;5;204m=[39m[38;5;15m [39m[38;5;186m'[39m[38;5;186m/home/rahul/workspace/vision/beg24/building_extraction_generalization_2024/dataset/coco/[39m[38;5;186m'[39m
+
+[38;5;204mfrom[39m[38;5;15m [39m[38;5;15mdetectron2[39m[38;5;15m.[39m[38;5;15mdata[39m[38;5;15m.[39m[38;5;15mdatasets[39m[38;5;15m [39m[38;5;204mimport[39m[38;5;15m [39m[38;5;15mregister_coco_instances[39m
+[38;5;15mregister_coco_instances[39m[38;5;15m([39m[38;5;186m"[39m[38;5;186mbeg_train[39m[38;5;186m"[39m[38;5;15m,[39m[38;5;15m [39m[38;5;15m{[39m[38;5;15m}[39m[38;5;15m,[39m[38;5;15m [39m[38;5;15mos[39m[38;5;204m.[39m[38;5;15mpath[39m[38;5;204m.[39m[38;5;15mjoin[39m[38;5;15m([39m[38;5;15mdata_root[39m[38;5;15m,[39m[38;5;186m"[39m[38;5;186mtrain/train.json[39m[38;5;186m"[39m[38;5;15m)[39m[38;5;15m,[39m[38;5;15m [39m
+[38;5;15m                                            [39m[38;5;15mos[39m[38;5;204m.[39m[38;5;15mpath[39m[38;5;204m.[39m[38;5;15mjoin[39m[38;5;15m([39m[38;5;15mdata_root[39m[38;5;15m,[39m[38;5;186m"[39m[38;5;186mtrain[39m[38;5;186m"[39m[38;5;15m)[39m[38;5;15m)[39m
+[38;5;15mregister_coco_instances[39m[38;5;15m([39m[38;5;186m"[39m[38;5;186mbeg_val[39m[38;5;186m"[39m[38;5;15m,[39m[38;5;15m [39m[38;5;15m{[39m[38;5;15m}[39m[38;5;15m,[39m[38;5;15m [39m[38;5;15mos[39m[38;5;204m.[39m[38;5;15mpath[39m[38;5;204m.[39m[38;5;15mjoin[39m[38;5;15m([39m[38;5;15mdata_root[39m[38;5;15m,[39m[38;5;186m"[39m[38;5;186mval/val.json[39m[38;5;186m"[39m[38;5;15m)[39m[38;5;15m,[39m[38;5;15m [39m
+[38;5;15m                                            [39m[38;5;15mos[39m[38;5;204m.[39m[38;5;15mpath[39m[38;5;204m.[39m[38;5;15mjoin[39m[38;5;15m([39m[38;5;15mdata_root[39m[38;5;15m,[39m[38;5;186m"[39m[38;5;186mval[39m[38;5;186m"[39m[38;5;15m)[39m[38;5;15m)[39m
+
+
+[38;5;15mmodel[39m[38;5;15m [39m[38;5;204m=[39m[38;5;15m [39m[38;5;15mmodel_zoo[39m[38;5;204m.[39m[38;5;15mget_config[39m[38;5;15m([39m[38;5;186m"[39m[38;5;186mcommon/models/mask_rcnn_vitdet.py[39m[38;5;186m"[39m[38;5;15m)[39m[38;5;204m.[39m[38;5;15mmodel[39m
+
+[38;5;245m# Initialization and trainer settings[39m
+[38;5;15mtrain[39m[38;5;15m [39m[38;5;204m=[39m[38;5;15m [39m[38;5;15mmodel_zoo[39m[38;5;204m.[39m[38;5;15mget_config[39m[38;5;15m([39m[38;5;186m"[39m[38;5;186mcommon/train.py[39m[38;5;186m"[39m[38;5;15m)[39m[38;5;204m.[39m[38;5;15mtrain[39m
+[38;5;15mtrain[39m[38;5;204m.[39m[38;5;15mamp[39m[38;5;204m.[39m[38;5;15menabled[39m[38;5;15m [39m[38;5;204m=[39m[38;5;15m [39m[38;5;81mTrue[39m
+[38;5;15mtrain[39m[38;5;204m.[39m[38;5;15mddp[39m[38;5;204m.[39m[38;5;15mfp16_compression[39m[38;5;15m [39m[38;5;204m=[39m[38;5;15m [39m[38;5;81mTrue[39m
+[38;5;15mtrain[39m[38;5;204m.[39m[38;5;15minit_checkpoint[39m[38;5;15m [39m[38;5;204m=[39m[38;5;15m [39m[38;5;15m([39m[38;5;186m"[39m[38;5;186mdetectron2://ImageNetPretrained/MAE/mae_pretrain_vit_base.pth?matching_heuristics=True[39m[38;5;186m"[39m[38;5;15m)[39m
+
+[38;5;245m# Schedule[39m
+[38;5;245m# 100 ep = 184375 iters * 64 images/iter / 118000 images/ep[39m
+[38;5;15mtrain[39m[38;5;204m.[39m[38;5;15mmax_iter[39m[38;5;15m [39m[38;5;204m=[39m[38;5;15m [39m[38;5;141m184375[39m
+[38;5;15mtrain[39m[38;5;204m.[39m[38;5;15moutput_dir[39m[38;5;15m [39m[38;5;204m=[39m[38;5;15m [39m[38;5;186m"[39m[38;5;186m./out_mrcnn_vitdet_b_100ep_exp1[39m[38;5;186m"[39m
+
+[38;5;15mlr_multiplier[39m[38;5;15m [39m[38;5;204m=[39m[38;5;15m [39m[38;5;15mL[39m[38;5;15m([39m[38;5;15mWarmupParamScheduler[39m[38;5;15m)[39m[38;5;15m([39m
+[38;5;15m    [39m[38;5;15mscheduler[39m[38;5;204m=[39m[38;5;15mL[39m[38;5;15m([39m[38;5;15mMultiStepParamScheduler[39m[38;5;15m)[39m[38;5;15m([39m
+[38;5;15m        [39m[38;5;15mvalues[39m[38;5;204m=[39m[38;5;15m[[39m[38;5;141m1.0[39m[38;5;15m,[39m[38;5;15m [39m[38;5;141m0.1[39m[38;5;15m,[39m[38;5;15m [39m[38;5;141m0.01[39m[38;5;15m][39m[38;5;15m,[39m
+[38;5;15m        [39m[38;5;15mmilestones[39m[38;5;204m=[39m[38;5;15m[[39m[38;5;141m163889[39m[38;5;15m,[39m[38;5;15m [39m[38;5;141m177546[39m[38;5;15m][39m[38;5;15m,[39m
+[38;5;15m        [39m[38;5;15mnum_updates[39m[38;5;204m=[39m[38;5;15mtrain[39m[38;5;204m.[39m[38;5;15mmax_iter[39m[38;5;15m,[39m
+[38;5;15m    [39m[38;5;15m)[39m[38;5;15m,[39m
+[38;5;15m    [39m[38;5;15mwarmup_length[39m[38;5;204m=[39m[38;5;141m250[39m[38;5;15m [39m[38;5;204m/[39m[38;5;15m [39m[38;5;15mtrain[39m[38;5;204m.[39m[38;5;15mmax_iter[39m[38;5;15m,[39m
+[38;5;15m    [39m[38;5;15mwarmup_factor[39m[38;5;204m=[39m[38;5;141m0.001[39m[38;5;15m,[39m
+[38;5;15m)[39m
+
+[38;5;245m# Optimizer[39m
+[38;5;15moptimizer[39m[38;5;15m [39m[38;5;204m=[39m[38;5;15m [39m[38;5;15mmodel_zoo[39m[38;5;204m.[39m[38;5;15mget_config[39m[38;5;15m([39m[38;5;186m"[39m[38;5;186mcommon/optim.py[39m[38;5;186m"[39m[38;5;15m)[39m[38;5;204m.[39m[38;5;15mAdamW[39m
+[38;5;15moptimizer[39m[38;5;204m.[39m[38;5;15mparams[39m[38;5;204m.[39m[38;5;15mlr_factor_func[39m[38;5;15m [39m[38;5;204m=[39m[38;5;15m [39m[38;5;15mpartial[39m[38;5;15m([39m[38;5;15mget_vit_lr_decay_rate[39m[38;5;15m,[39m[38;5;15m [39m[38;5;15mnum_layers[39m[38;5;204m=[39m[38;5;141m12[39m[38;5;15m,[39m[38;5;15m [39m[38;5;15mlr_decay_rate[39m[38;5;204m=[39m[38;5;141m0.7[39m[38;5;15m)[39m
+[38;5;15moptimizer[39m[38;5;204m.[39m[38;5;15mparams[39m[38;5;204m.[39m[38;5;15moverrides[39m[38;5;15m [39m[38;5;204m=[39m[38;5;15m [39m[38;5;15m{[39m[38;5;186m"[39m[38;5;186mpos_embed[39m[38;5;186m"[39m[38;5;15m:[39m[38;5;15m [39m[38;5;15m{[39m[38;5;186m"[39m[38;5;186mweight_decay[39m[38;5;186m"[39m[38;5;15m:[39m[38;5;15m [39m[38;5;141m0.0[39m[38;5;15m}[39m[38;5;15m}[39m
+
+
+[38;5;245m# Data loaders[39m
+[38;5;15mdataloader[39m[38;5;204m.[39m[38;5;15mtrain[39m[38;5;204m.[39m[38;5;15mdataset[39m[38;5;204m.[39m[38;5;15mnames[39m[38;5;15m [39m[38;5;204m=[39m[38;5;15m [39m[38;5;186m"[39m[38;5;186mbeg_train[39m[38;5;186m"[39m
+[38;5;15mdataloader[39m[38;5;204m.[39m[38;5;15mtest[39m[38;5;204m.[39m[38;5;15mdataset[39m[38;5;204m.[39m[38;5;15mnames[39m[38;5;15m [39m[38;5;204m=[39m[38;5;15m [39m[38;5;186m"[39m[38;5;186mbeg_val[39m[38;5;186m"[39m
+[38;5;15mdataloader[39m[38;5;204m.[39m[38;5;15mtrain[39m[38;5;204m.[39m[38;5;15mtotal_batch_size[39m[38;5;15m [39m[38;5;204m=[39m[38;5;15m [39m[38;5;141m4[39m
+
+[08/02 22:27:51] detectron2 INFO: Full config saved to ./out_mrcnn_vitdet_b_100ep_exp1/config.yaml
+[08/02 22:27:51] d2.utils.env INFO: Using a generated random seed 53799310
+[08/02 22:27:55] detectron2 INFO: Model:
+GeneralizedRCNN(
+  (backbone): SimpleFeaturePyramid(
+    (simfp_2): Sequential(
+      (0): ConvTranspose2d(768, 384, kernel_size=(2, 2), stride=(2, 2))
+      (1): LayerNorm()
+      (2): GELU(approximate='none')
+      (3): ConvTranspose2d(384, 192, kernel_size=(2, 2), stride=(2, 2))
+      (4): Conv2d(
+        192, 256, kernel_size=(1, 1), stride=(1, 1), bias=False
+        (norm): LayerNorm()
+      )
+      (5): Conv2d(
+        256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False
+        (norm): LayerNorm()
+      )
+    )
+    (simfp_3): Sequential(
+      (0): ConvTranspose2d(768, 384, kernel_size=(2, 2), stride=(2, 2))
+      (1): Conv2d(
+        384, 256, kernel_size=(1, 1), stride=(1, 1), bias=False
+        (norm): LayerNorm()
+      )
+      (2): Conv2d(
+        256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False
+        (norm): LayerNorm()
+      )
+    )
+    (simfp_4): Sequential(
+      (0): Conv2d(
+        768, 256, kernel_size=(1, 1), stride=(1, 1), bias=False
+        (norm): LayerNorm()
+      )
+      (1): Conv2d(
+        256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False
+        (norm): LayerNorm()
+      )
+    )
+    (simfp_5): Sequential(
+      (0): MaxPool2d(kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=False)
+      (1): Conv2d(
+        768, 256, kernel_size=(1, 1), stride=(1, 1), bias=False
+        (norm): LayerNorm()
+      )
+      (2): Conv2d(
+        256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False
+        (norm): LayerNorm()
+      )
+    )
+    (net): ViT(
+      (patch_embed): PatchEmbed(
+        (proj): Conv2d(3, 768, kernel_size=(16, 16), stride=(16, 16))
+      )
+      (blocks): ModuleList(
+        (0): Block(
+          (norm1): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
+          (attn): Attention(
+            (qkv): Linear(in_features=768, out_features=2304, bias=True)
+            (proj): Linear(in_features=768, out_features=768, bias=True)
+          )
+          (drop_path): Identity()
+          (norm2): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
+          (mlp): Mlp(
+            (fc1): Linear(in_features=768, out_features=3072, bias=True)
+            (act): GELU(approximate='none')
+            (fc2): Linear(in_features=3072, out_features=768, bias=True)
+            (drop): Dropout(p=0.0, inplace=False)
+          )
+        )
+        (1): Block(
+          (norm1): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
+          (attn): Attention(
+            (qkv): Linear(in_features=768, out_features=2304, bias=True)
+            (proj): Linear(in_features=768, out_features=768, bias=True)
+          )
+          (drop_path): DropPath()
+          (norm2): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
+          (mlp): Mlp(
+            (fc1): Linear(in_features=768, out_features=3072, bias=True)
+            (act): GELU(approximate='none')
+            (fc2): Linear(in_features=3072, out_features=768, bias=True)
+            (drop): Dropout(p=0.0, inplace=False)
+          )
+        )
+        (2): Block(
+          (norm1): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
+          (attn): Attention(
+            (qkv): Linear(in_features=768, out_features=2304, bias=True)
+            (proj): Linear(in_features=768, out_features=768, bias=True)
+          )
+          (drop_path): DropPath()
+          (norm2): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
+          (mlp): Mlp(
+            (fc1): Linear(in_features=768, out_features=3072, bias=True)
+            (act): GELU(approximate='none')
+            (fc2): Linear(in_features=3072, out_features=768, bias=True)
+            (drop): Dropout(p=0.0, inplace=False)
+          )
+        )
+        (3): Block(
+          (norm1): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
+          (attn): Attention(
+            (qkv): Linear(in_features=768, out_features=2304, bias=True)
+            (proj): Linear(in_features=768, out_features=768, bias=True)
+          )
+          (drop_path): DropPath()
+          (norm2): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
+          (mlp): Mlp(
+            (fc1): Linear(in_features=768, out_features=3072, bias=True)
+            (act): GELU(approximate='none')
+            (fc2): Linear(in_features=3072, out_features=768, bias=True)
+            (drop): Dropout(p=0.0, inplace=False)
+          )
+        )
+        (4): Block(
+          (norm1): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
+          (attn): Attention(
+            (qkv): Linear(in_features=768, out_features=2304, bias=True)
+            (proj): Linear(in_features=768, out_features=768, bias=True)
+          )
+          (drop_path): DropPath()
+          (norm2): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
+          (mlp): Mlp(
+            (fc1): Linear(in_features=768, out_features=3072, bias=True)
+            (act): GELU(approximate='none')
+            (fc2): Linear(in_features=3072, out_features=768, bias=True)
+            (drop): Dropout(p=0.0, inplace=False)
+          )
+        )
+        (5): Block(
+          (norm1): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
+          (attn): Attention(
+            (qkv): Linear(in_features=768, out_features=2304, bias=True)
+            (proj): Linear(in_features=768, out_features=768, bias=True)
+          )
+          (drop_path): DropPath()
+          (norm2): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
+          (mlp): Mlp(
+            (fc1): Linear(in_features=768, out_features=3072, bias=True)
+            (act): GELU(approximate='none')
+            (fc2): Linear(in_features=3072, out_features=768, bias=True)
+            (drop): Dropout(p=0.0, inplace=False)
+          )
+        )
+        (6): Block(
+          (norm1): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
+          (attn): Attention(
+            (qkv): Linear(in_features=768, out_features=2304, bias=True)
+            (proj): Linear(in_features=768, out_features=768, bias=True)
+          )
+          (drop_path): DropPath()
+          (norm2): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
+          (mlp): Mlp(
+            (fc1): Linear(in_features=768, out_features=3072, bias=True)
+            (act): GELU(approximate='none')
+            (fc2): Linear(in_features=3072, out_features=768, bias=True)
+            (drop): Dropout(p=0.0, inplace=False)
+          )
+        )
+        (7): Block(
+          (norm1): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
+          (attn): Attention(
+            (qkv): Linear(in_features=768, out_features=2304, bias=True)
+            (proj): Linear(in_features=768, out_features=768, bias=True)
+          )
+          (drop_path): DropPath()
+          (norm2): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
+          (mlp): Mlp(
+            (fc1): Linear(in_features=768, out_features=3072, bias=True)
+            (act): GELU(approximate='none')
+            (fc2): Linear(in_features=3072, out_features=768, bias=True)
+            (drop): Dropout(p=0.0, inplace=False)
+          )
+        )
+        (8): Block(
+          (norm1): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
+          (attn): Attention(
+            (qkv): Linear(in_features=768, out_features=2304, bias=True)
+            (proj): Linear(in_features=768, out_features=768, bias=True)
+          )
+          (drop_path): DropPath()
+          (norm2): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
+          (mlp): Mlp(
+            (fc1): Linear(in_features=768, out_features=3072, bias=True)
+            (act): GELU(approximate='none')
+            (fc2): Linear(in_features=3072, out_features=768, bias=True)
+            (drop): Dropout(p=0.0, inplace=False)
+          )
+        )
+        (9): Block(
+          (norm1): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
+          (attn): Attention(
+            (qkv): Linear(in_features=768, out_features=2304, bias=True)
+            (proj): Linear(in_features=768, out_features=768, bias=True)
+          )
+          (drop_path): DropPath()
+          (norm2): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
+          (mlp): Mlp(
+            (fc1): Linear(in_features=768, out_features=3072, bias=True)
+            (act): GELU(approximate='none')
+            (fc2): Linear(in_features=3072, out_features=768, bias=True)
+            (drop): Dropout(p=0.0, inplace=False)
+          )
+        )
+        (10): Block(
+          (norm1): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
+          (attn): Attention(
+            (qkv): Linear(in_features=768, out_features=2304, bias=True)
+            (proj): Linear(in_features=768, out_features=768, bias=True)
+          )
+          (drop_path): DropPath()
+          (norm2): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
+          (mlp): Mlp(
+            (fc1): Linear(in_features=768, out_features=3072, bias=True)
+            (act): GELU(approximate='none')
+            (fc2): Linear(in_features=3072, out_features=768, bias=True)
+            (drop): Dropout(p=0.0, inplace=False)
+          )
+        )
+        (11): Block(
+          (norm1): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
+          (attn): Attention(
+            (qkv): Linear(in_features=768, out_features=2304, bias=True)
+            (proj): Linear(in_features=768, out_features=768, bias=True)
+          )
+          (drop_path): DropPath()
+          (norm2): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
+          (mlp): Mlp(
+            (fc1): Linear(in_features=768, out_features=3072, bias=True)
+            (act): GELU(approximate='none')
+            (fc2): Linear(in_features=3072, out_features=768, bias=True)
+            (drop): Dropout(p=0.0, inplace=False)
+          )
+        )
+      )
+    )
+    (top_block): LastLevelMaxPool()
+  )
+  (proposal_generator): RPN(
+    (rpn_head): StandardRPNHead(
+      (conv): Sequential(
+        (conv0): Conv2d(
+          256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1)
+          (activation): ReLU()
+        )
+        (conv1): Conv2d(
+          256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1)
+          (activation): ReLU()
+        )
+      )
+      (objectness_logits): Conv2d(256, 3, kernel_size=(1, 1), stride=(1, 1))
+      (anchor_deltas): Conv2d(256, 12, kernel_size=(1, 1), stride=(1, 1))
+    )
+    (anchor_generator): DefaultAnchorGenerator(
+      (cell_anchors): BufferList()
+    )
+  )
+  (roi_heads): StandardROIHeads(
+    (box_pooler): ROIPooler(
+      (level_poolers): ModuleList(
+        (0): ROIAlign(output_size=(7, 7), spatial_scale=0.25, sampling_ratio=0, aligned=True)
+        (1): ROIAlign(output_size=(7, 7), spatial_scale=0.125, sampling_ratio=0, aligned=True)
+        (2): ROIAlign(output_size=(7, 7), spatial_scale=0.0625, sampling_ratio=0, aligned=True)
+        (3): ROIAlign(output_size=(7, 7), spatial_scale=0.03125, sampling_ratio=0, aligned=True)
+      )
+    )
+    (box_head): FastRCNNConvFCHead(
+      (conv1): Conv2d(
+        256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False
+        (norm): LayerNorm()
+        (activation): ReLU()
+      )
+      (conv2): Conv2d(
+        256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False
+        (norm): LayerNorm()
+        (activation): ReLU()
+      )
+      (conv3): Conv2d(
+        256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False
+        (norm): LayerNorm()
+        (activation): ReLU()
+      )
+      (conv4): Conv2d(
+        256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False
+        (norm): LayerNorm()
+        (activation): ReLU()
+      )
+      (flatten): Flatten(start_dim=1, end_dim=-1)
+      (fc1): Linear(in_features=12544, out_features=1024, bias=True)
+      (fc_relu1): ReLU()
+    )
+    (box_predictor): FastRCNNOutputLayers(
+      (cls_score): Linear(in_features=1024, out_features=81, bias=True)
+      (bbox_pred): Linear(in_features=1024, out_features=320, bias=True)
+    )
+    (mask_pooler): ROIPooler(
+      (level_poolers): ModuleList(
+        (0): ROIAlign(output_size=(14, 14), spatial_scale=0.25, sampling_ratio=0, aligned=True)
+        (1): ROIAlign(output_size=(14, 14), spatial_scale=0.125, sampling_ratio=0, aligned=True)
+        (2): ROIAlign(output_size=(14, 14), spatial_scale=0.0625, sampling_ratio=0, aligned=True)
+        (3): ROIAlign(output_size=(14, 14), spatial_scale=0.03125, sampling_ratio=0, aligned=True)
+      )
+    )
+    (mask_head): MaskRCNNConvUpsampleHead(
+      (mask_fcn1): Conv2d(
+        256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False
+        (norm): LayerNorm()
+        (activation): ReLU()
+      )
+      (mask_fcn2): Conv2d(
+        256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False
+        (norm): LayerNorm()
+        (activation): ReLU()
+      )
+      (mask_fcn3): Conv2d(
+        256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False
+        (norm): LayerNorm()
+        (activation): ReLU()
+      )
+      (mask_fcn4): Conv2d(
+        256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False
+        (norm): LayerNorm()
+        (activation): ReLU()
+      )
+      (deconv): ConvTranspose2d(256, 256, kernel_size=(2, 2), stride=(2, 2))
+      (deconv_relu): ReLU()
+      (predictor): Conv2d(256, 80, kernel_size=(1, 1), stride=(1, 1))
+    )
+  )
+)
+[08/02 22:28:01] d2.data.datasets.coco INFO: Loading /home/rahul/workspace/vision/beg24/building_extraction_generalization_2024/dataset/coco/train/train.json takes 1.15 seconds.
+[08/02 22:28:01] d2.data.datasets.coco WARNING: 
+Category ids in annotations are not in [1, #categories]! We'll apply a mapping for you.
+
+[08/02 22:28:01] d2.data.datasets.coco INFO: Loaded 3784 images in COCO format from /home/rahul/workspace/vision/beg24/building_extraction_generalization_2024/dataset/coco/train/train.json
+[08/02 22:28:01] d2.data.build INFO: Removed 0 images with no usable annotations. 3784 images left.
+[08/02 22:28:01] d2.data.build INFO: Distribution of instances among all 1 categories:
+[36m|  category  | #instances   |
+|:----------:|:-------------|
+|  building  | 148983       |
+|            |              |[0m
+[08/02 22:28:01] d2.data.dataset_mapper INFO: [DatasetMapper] Augmentations used in training: [RandomFlip(), ResizeScale(min_scale=0.1, max_scale=2.0, target_height=1024, target_width=1024), FixedSizeCrop(crop_size=[1024, 1024], pad=False)]
+[08/02 22:28:01] d2.data.common INFO: Serializing the dataset using: <class 'detectron2.data.common._TorchSerializedList'>
+[08/02 22:28:01] d2.data.common INFO: Serializing 3784 elements to byte tensors and concatenating them all ...
+[08/02 22:28:02] d2.data.common INFO: Serialized dataset takes 11.20 MiB
+[08/02 22:28:02] d2.data.build INFO: Making batched data loader with batch_size=4
+[08/02 22:28:02] d2.checkpoint.detection_checkpoint INFO: [DetectionCheckpointer] Loading from detectron2://ImageNetPretrained/MAE/mae_pretrain_vit_base.pth?matching_heuristics=True ...
+[08/02 22:28:02] fvcore.common.checkpoint INFO: [Checkpointer] Loading from /home/rahul/.torch/iopath_cache/detectron2/ImageNetPretrained/MAE/mae_pretrain_vit_base.pth ...
+[08/02 22:28:02] d2.checkpoint.c2_model_loading WARNING: Shape of norm.bias in checkpoint is torch.Size([768]), while shape of backbone.simfp_2.4.norm.bias in model is torch.Size([256]).
+[08/02 22:28:02] d2.checkpoint.c2_model_loading WARNING: norm.bias will not be loaded. Please double check and see if this is desired.
+[08/02 22:28:02] d2.checkpoint.c2_model_loading WARNING: Shape of norm.weight in checkpoint is torch.Size([768]), while shape of backbone.simfp_2.4.norm.weight in model is torch.Size([256]).
+[08/02 22:28:02] d2.checkpoint.c2_model_loading WARNING: norm.weight will not be loaded. Please double check and see if this is desired.
+[08/02 22:28:02] d2.checkpoint.c2_model_loading WARNING: Shape of norm.bias in checkpoint is torch.Size([768]), while shape of backbone.simfp_2.5.norm.bias in model is torch.Size([256]).
+[08/02 22:28:02] d2.checkpoint.c2_model_loading WARNING: norm.bias will not be loaded. Please double check and see if this is desired.
+[08/02 22:28:02] d2.checkpoint.c2_model_loading WARNING: Shape of norm.weight in checkpoint is torch.Size([768]), while shape of backbone.simfp_2.5.norm.weight in model is torch.Size([256]).
+[08/02 22:28:02] d2.checkpoint.c2_model_loading WARNING: norm.weight will not be loaded. Please double check and see if this is desired.
+[08/02 22:28:02] d2.checkpoint.c2_model_loading WARNING: Shape of norm.bias in checkpoint is torch.Size([768]), while shape of backbone.simfp_3.1.norm.bias in model is torch.Size([256]).
+[08/02 22:28:02] d2.checkpoint.c2_model_loading WARNING: norm.bias will not be loaded. Please double check and see if this is desired.
+[08/02 22:28:02] d2.checkpoint.c2_model_loading WARNING: Shape of norm.weight in checkpoint is torch.Size([768]), while shape of backbone.simfp_3.1.norm.weight in model is torch.Size([256]).
+[08/02 22:28:02] d2.checkpoint.c2_model_loading WARNING: norm.weight will not be loaded. Please double check and see if this is desired.
+[08/02 22:28:02] d2.checkpoint.c2_model_loading WARNING: Shape of norm.bias in checkpoint is torch.Size([768]), while shape of backbone.simfp_3.2.norm.bias in model is torch.Size([256]).
+[08/02 22:28:02] d2.checkpoint.c2_model_loading WARNING: norm.bias will not be loaded. Please double check and see if this is desired.
+[08/02 22:28:02] d2.checkpoint.c2_model_loading WARNING: Shape of norm.weight in checkpoint is torch.Size([768]), while shape of backbone.simfp_3.2.norm.weight in model is torch.Size([256]).
+[08/02 22:28:02] d2.checkpoint.c2_model_loading WARNING: norm.weight will not be loaded. Please double check and see if this is desired.
+[08/02 22:28:02] d2.checkpoint.c2_model_loading WARNING: Shape of norm.bias in checkpoint is torch.Size([768]), while shape of backbone.simfp_4.0.norm.bias in model is torch.Size([256]).
+[08/02 22:28:02] d2.checkpoint.c2_model_loading WARNING: norm.bias will not be loaded. Please double check and see if this is desired.
+[08/02 22:28:02] d2.checkpoint.c2_model_loading WARNING: Shape of norm.weight in checkpoint is torch.Size([768]), while shape of backbone.simfp_4.0.norm.weight in model is torch.Size([256]).
+[08/02 22:28:02] d2.checkpoint.c2_model_loading WARNING: norm.weight will not be loaded. Please double check and see if this is desired.
+[08/02 22:28:02] d2.checkpoint.c2_model_loading WARNING: Shape of norm.bias in checkpoint is torch.Size([768]), while shape of backbone.simfp_4.1.norm.bias in model is torch.Size([256]).
+[08/02 22:28:02] d2.checkpoint.c2_model_loading WARNING: norm.bias will not be loaded. Please double check and see if this is desired.
+[08/02 22:28:02] d2.checkpoint.c2_model_loading WARNING: Shape of norm.weight in checkpoint is torch.Size([768]), while shape of backbone.simfp_4.1.norm.weight in model is torch.Size([256]).
+[08/02 22:28:02] d2.checkpoint.c2_model_loading WARNING: norm.weight will not be loaded. Please double check and see if this is desired.
+[08/02 22:28:02] d2.checkpoint.c2_model_loading WARNING: Shape of norm.bias in checkpoint is torch.Size([768]), while shape of backbone.simfp_5.1.norm.bias in model is torch.Size([256]).
+[08/02 22:28:02] d2.checkpoint.c2_model_loading WARNING: norm.bias will not be loaded. Please double check and see if this is desired.
+[08/02 22:28:02] d2.checkpoint.c2_model_loading WARNING: Shape of norm.weight in checkpoint is torch.Size([768]), while shape of backbone.simfp_5.1.norm.weight in model is torch.Size([256]).
+[08/02 22:28:02] d2.checkpoint.c2_model_loading WARNING: norm.weight will not be loaded. Please double check and see if this is desired.
+[08/02 22:28:02] d2.checkpoint.c2_model_loading WARNING: Shape of norm.bias in checkpoint is torch.Size([768]), while shape of backbone.simfp_5.2.norm.bias in model is torch.Size([256]).
+[08/02 22:28:02] d2.checkpoint.c2_model_loading WARNING: norm.bias will not be loaded. Please double check and see if this is desired.
+[08/02 22:28:02] d2.checkpoint.c2_model_loading WARNING: Shape of norm.weight in checkpoint is torch.Size([768]), while shape of backbone.simfp_5.2.norm.weight in model is torch.Size([256]).
+[08/02 22:28:02] d2.checkpoint.c2_model_loading WARNING: norm.weight will not be loaded. Please double check and see if this is desired.
+[08/02 22:28:02] d2.checkpoint.c2_model_loading WARNING: Shape of norm.bias in checkpoint is torch.Size([768]), while shape of roi_heads.box_head.conv1.norm.bias in model is torch.Size([256]).
+[08/02 22:28:02] d2.checkpoint.c2_model_loading WARNING: norm.bias will not be loaded. Please double check and see if this is desired.
+[08/02 22:28:02] d2.checkpoint.c2_model_loading WARNING: Shape of norm.weight in checkpoint is torch.Size([768]), while shape of roi_heads.box_head.conv1.norm.weight in model is torch.Size([256]).
+[08/02 22:28:02] d2.checkpoint.c2_model_loading WARNING: norm.weight will not be loaded. Please double check and see if this is desired.
+[08/02 22:28:02] d2.checkpoint.c2_model_loading WARNING: Shape of norm.bias in checkpoint is torch.Size([768]), while shape of roi_heads.box_head.conv2.norm.bias in model is torch.Size([256]).
+[08/02 22:28:02] d2.checkpoint.c2_model_loading WARNING: norm.bias will not be loaded. Please double check and see if this is desired.
+[08/02 22:28:02] d2.checkpoint.c2_model_loading WARNING: Shape of norm.weight in checkpoint is torch.Size([768]), while shape of roi_heads.box_head.conv2.norm.weight in model is torch.Size([256]).
+[08/02 22:28:02] d2.checkpoint.c2_model_loading WARNING: norm.weight will not be loaded. Please double check and see if this is desired.
+[08/02 22:28:02] d2.checkpoint.c2_model_loading WARNING: Shape of norm.bias in checkpoint is torch.Size([768]), while shape of roi_heads.box_head.conv3.norm.bias in model is torch.Size([256]).
+[08/02 22:28:02] d2.checkpoint.c2_model_loading WARNING: norm.bias will not be loaded. Please double check and see if this is desired.
+[08/02 22:28:02] d2.checkpoint.c2_model_loading WARNING: Shape of norm.weight in checkpoint is torch.Size([768]), while shape of roi_heads.box_head.conv3.norm.weight in model is torch.Size([256]).
+[08/02 22:28:02] d2.checkpoint.c2_model_loading WARNING: norm.weight will not be loaded. Please double check and see if this is desired.
+[08/02 22:28:02] d2.checkpoint.c2_model_loading WARNING: Shape of norm.bias in checkpoint is torch.Size([768]), while shape of roi_heads.box_head.conv4.norm.bias in model is torch.Size([256]).
+[08/02 22:28:02] d2.checkpoint.c2_model_loading WARNING: norm.bias will not be loaded. Please double check and see if this is desired.
+[08/02 22:28:02] d2.checkpoint.c2_model_loading WARNING: Shape of norm.weight in checkpoint is torch.Size([768]), while shape of roi_heads.box_head.conv4.norm.weight in model is torch.Size([256]).
+[08/02 22:28:02] d2.checkpoint.c2_model_loading WARNING: norm.weight will not be loaded. Please double check and see if this is desired.
+[08/02 22:28:02] d2.checkpoint.c2_model_loading WARNING: Shape of norm.bias in checkpoint is torch.Size([768]), while shape of roi_heads.mask_head.mask_fcn1.norm.bias in model is torch.Size([256]).
+[08/02 22:28:02] d2.checkpoint.c2_model_loading WARNING: norm.bias will not be loaded. Please double check and see if this is desired.
+[08/02 22:28:02] d2.checkpoint.c2_model_loading WARNING: Shape of norm.weight in checkpoint is torch.Size([768]), while shape of roi_heads.mask_head.mask_fcn1.norm.weight in model is torch.Size([256]).
+[08/02 22:28:02] d2.checkpoint.c2_model_loading WARNING: norm.weight will not be loaded. Please double check and see if this is desired.
+[08/02 22:28:02] d2.checkpoint.c2_model_loading WARNING: Shape of norm.bias in checkpoint is torch.Size([768]), while shape of roi_heads.mask_head.mask_fcn2.norm.bias in model is torch.Size([256]).
+[08/02 22:28:02] d2.checkpoint.c2_model_loading WARNING: norm.bias will not be loaded. Please double check and see if this is desired.
+[08/02 22:28:02] d2.checkpoint.c2_model_loading WARNING: Shape of norm.weight in checkpoint is torch.Size([768]), while shape of roi_heads.mask_head.mask_fcn2.norm.weight in model is torch.Size([256]).
+[08/02 22:28:02] d2.checkpoint.c2_model_loading WARNING: norm.weight will not be loaded. Please double check and see if this is desired.
+[08/02 22:28:02] d2.checkpoint.c2_model_loading WARNING: Shape of norm.bias in checkpoint is torch.Size([768]), while shape of roi_heads.mask_head.mask_fcn3.norm.bias in model is torch.Size([256]).
+[08/02 22:28:02] d2.checkpoint.c2_model_loading WARNING: norm.bias will not be loaded. Please double check and see if this is desired.
+[08/02 22:28:02] d2.checkpoint.c2_model_loading WARNING: Shape of norm.weight in checkpoint is torch.Size([768]), while shape of roi_heads.mask_head.mask_fcn3.norm.weight in model is torch.Size([256]).
+[08/02 22:28:02] d2.checkpoint.c2_model_loading WARNING: norm.weight will not be loaded. Please double check and see if this is desired.
+[08/02 22:28:02] d2.checkpoint.c2_model_loading WARNING: Shape of norm.bias in checkpoint is torch.Size([768]), while shape of roi_heads.mask_head.mask_fcn4.norm.bias in model is torch.Size([256]).
+[08/02 22:28:02] d2.checkpoint.c2_model_loading WARNING: norm.bias will not be loaded. Please double check and see if this is desired.
+[08/02 22:28:02] d2.checkpoint.c2_model_loading WARNING: Shape of norm.weight in checkpoint is torch.Size([768]), while shape of roi_heads.mask_head.mask_fcn4.norm.weight in model is torch.Size([256]).
+[08/02 22:28:02] d2.checkpoint.c2_model_loading WARNING: norm.weight will not be loaded. Please double check and see if this is desired.
+[08/02 22:28:02] d2.checkpoint.c2_model_loading INFO: Following weights matched with submodule backbone.net - Total num: 74
+[08/02 22:28:02] fvcore.common.checkpoint WARNING: Some model parameters or buffers are not found in the checkpoint:
+[34mbackbone.net.blocks.0.attn.{rel_pos_h, rel_pos_w}[0m
+[34mbackbone.net.blocks.1.attn.{rel_pos_h, rel_pos_w}[0m
+[34mbackbone.net.blocks.10.attn.{rel_pos_h, rel_pos_w}[0m
+[34mbackbone.net.blocks.11.attn.{rel_pos_h, rel_pos_w}[0m
+[34mbackbone.net.blocks.2.attn.{rel_pos_h, rel_pos_w}[0m
+[34mbackbone.net.blocks.3.attn.{rel_pos_h, rel_pos_w}[0m
+[34mbackbone.net.blocks.4.attn.{rel_pos_h, rel_pos_w}[0m
+[34mbackbone.net.blocks.5.attn.{rel_pos_h, rel_pos_w}[0m
+[34mbackbone.net.blocks.6.attn.{rel_pos_h, rel_pos_w}[0m
+[34mbackbone.net.blocks.7.attn.{rel_pos_h, rel_pos_w}[0m
+[34mbackbone.net.blocks.8.attn.{rel_pos_h, rel_pos_w}[0m
+[34mbackbone.net.blocks.9.attn.{rel_pos_h, rel_pos_w}[0m
+[34mbackbone.simfp_2.0.{bias, weight}[0m
+[34mbackbone.simfp_2.1.{bias, weight}[0m
+[34mbackbone.simfp_2.3.{bias, weight}[0m
+[34mbackbone.simfp_2.4.norm.{bias, weight}[0m
+[34mbackbone.simfp_2.4.weight[0m
+[34mbackbone.simfp_2.5.norm.{bias, weight}[0m
+[34mbackbone.simfp_2.5.weight[0m
+[34mbackbone.simfp_3.0.{bias, weight}[0m
+[34mbackbone.simfp_3.1.norm.{bias, weight}[0m
+[34mbackbone.simfp_3.1.weight[0m
+[34mbackbone.simfp_3.2.norm.{bias, weight}[0m
+[34mbackbone.simfp_3.2.weight[0m
+[34mbackbone.simfp_4.0.norm.{bias, weight}[0m
+[34mbackbone.simfp_4.0.weight[0m
+[34mbackbone.simfp_4.1.norm.{bias, weight}[0m
+[34mbackbone.simfp_4.1.weight[0m
+[34mbackbone.simfp_5.1.norm.{bias, weight}[0m
+[34mbackbone.simfp_5.1.weight[0m
+[34mbackbone.simfp_5.2.norm.{bias, weight}[0m
+[34mbackbone.simfp_5.2.weight[0m
+[34mproposal_generator.rpn_head.anchor_deltas.{bias, weight}[0m
+[34mproposal_generator.rpn_head.conv.conv0.{bias, weight}[0m
+[34mproposal_generator.rpn_head.conv.conv1.{bias, weight}[0m
+[34mproposal_generator.rpn_head.objectness_logits.{bias, weight}[0m
+[34mroi_heads.box_head.conv1.norm.{bias, weight}[0m
+[34mroi_heads.box_head.conv1.weight[0m
+[34mroi_heads.box_head.conv2.norm.{bias, weight}[0m
+[34mroi_heads.box_head.conv2.weight[0m
+[34mroi_heads.box_head.conv3.norm.{bias, weight}[0m
+[34mroi_heads.box_head.conv3.weight[0m
+[34mroi_heads.box_head.conv4.norm.{bias, weight}[0m
+[34mroi_heads.box_head.conv4.weight[0m
+[34mroi_heads.box_head.fc1.{bias, weight}[0m
+[34mroi_heads.box_predictor.bbox_pred.{bias, weight}[0m
+[34mroi_heads.box_predictor.cls_score.{bias, weight}[0m
+[34mroi_heads.mask_head.deconv.{bias, weight}[0m
+[34mroi_heads.mask_head.mask_fcn1.norm.{bias, weight}[0m
+[34mroi_heads.mask_head.mask_fcn1.weight[0m
+[34mroi_heads.mask_head.mask_fcn2.norm.{bias, weight}[0m
+[34mroi_heads.mask_head.mask_fcn2.weight[0m
+[34mroi_heads.mask_head.mask_fcn3.norm.{bias, weight}[0m
+[34mroi_heads.mask_head.mask_fcn3.weight[0m
+[34mroi_heads.mask_head.mask_fcn4.norm.{bias, weight}[0m
+[34mroi_heads.mask_head.mask_fcn4.weight[0m
+[34mroi_heads.mask_head.predictor.{bias, weight}[0m
+[08/02 22:28:02] fvcore.common.checkpoint WARNING: The checkpoint state_dict contains keys that are not used by the model:
+  [35mcls_token[0m
+  [35mnorm.{bias, weight}[0m
+[08/02 22:28:02] d2.engine.train_loop INFO: Starting training from iteration 0
+[08/02 22:28:28] d2.utils.events INFO:  eta: 1 day, 21:50:47  iter: 19  total_loss: 5.89  loss_cls: 4.041  loss_box_reg: 0.03428  loss_mask: 0.6926  loss_rpn_cls: 0.6932  loss_rpn_loc: 0.3821    time: 0.8948  last_time: 0.8860  data_time: 0.0181  last_data_time: 0.0061   lr: 7.6924e-06  max_mem: 36974M
+[08/02 22:28:47] d2.utils.events INFO:  eta: 1 day, 22:39:56  iter: 39  total_loss: 3.286  loss_cls: 1.186  loss_box_reg: 0.2637  loss_mask: 0.6912  loss_rpn_cls: 0.6864  loss_rpn_loc: 0.3841    time: 0.9151  last_time: 0.9404  data_time: 0.0070  last_data_time: 0.0073   lr: 1.5684e-05  max_mem: 37776M
+[08/02 22:29:05] d2.utils.events INFO:  eta: 1 day, 22:47:01  iter: 59  total_loss: 2.442  loss_cls: 0.4348  loss_box_reg: 0.2458  loss_mask: 0.6901  loss_rpn_cls: 0.6694  loss_rpn_loc: 0.4106    time: 0.9156  last_time: 0.9290  data_time: 0.0069  last_data_time: 0.0064   lr: 2.3676e-05  max_mem: 37776M
+[08/02 22:29:24] d2.utils.events INFO:  eta: 1 day, 22:48:28  iter: 79  total_loss: 2.102  loss_cls: 0.3307  loss_box_reg: 0.2115  loss_mask: 0.6853  loss_rpn_cls: 0.6231  loss_rpn_loc: 0.3396    time: 0.9159  last_time: 0.9099  data_time: 0.0066  last_data_time: 0.0071   lr: 3.1668e-05  max_mem: 37776M
+[08/02 22:29:42] d2.utils.events INFO:  eta: 1 day, 22:53:28  iter: 99  total_loss: 2.279  loss_cls: 0.3517  loss_box_reg: 0.2451  loss_mask: 0.6734  loss_rpn_cls: 0.5745  loss_rpn_loc: 0.4133    time: 0.9177  last_time: 0.9501  data_time: 0.0070  last_data_time: 0.0069   lr: 3.966e-05  max_mem: 37776M
+[08/02 22:30:01] d2.utils.events INFO:  eta: 1 day, 22:57:12  iter: 119  total_loss: 2.266  loss_cls: 0.3496  loss_box_reg: 0.2778  loss_mask: 0.6601  loss_rpn_cls: 0.5112  loss_rpn_loc: 0.377    time: 0.9190  last_time: 0.9013  data_time: 0.0065  last_data_time: 0.0058   lr: 4.7652e-05  max_mem: 37776M
+[08/02 22:30:19] d2.utils.events INFO:  eta: 1 day, 23:04:15  iter: 139  total_loss: 2.127  loss_cls: 0.3657  loss_box_reg: 0.3104  loss_mask: 0.6421  loss_rpn_cls: 0.4752  loss_rpn_loc: 0.34    time: 0.9216  last_time: 0.9339  data_time: 0.0071  last_data_time: 0.0071   lr: 5.5644e-05  max_mem: 37776M
+[08/02 22:30:38] d2.utils.events INFO:  eta: 1 day, 23:06:05  iter: 159  total_loss: 2.026  loss_cls: 0.3575  loss_box_reg: 0.2988  loss_mask: 0.6286  loss_rpn_cls: 0.3808  loss_rpn_loc: 0.3699    time: 0.9224  last_time: 0.9232  data_time: 0.0068  last_data_time: 0.0103   lr: 6.3636e-05  max_mem: 37776M
+[08/02 22:30:57] d2.utils.events INFO:  eta: 1 day, 23:06:28  iter: 179  total_loss: 2.116  loss_cls: 0.4128  loss_box_reg: 0.4002  loss_mask: 0.6152  loss_rpn_cls: 0.3079  loss_rpn_loc: 0.3979    time: 0.9231  last_time: 0.9067  data_time: 0.0068  last_data_time: 0.0063   lr: 7.1628e-05  max_mem: 38002M
+[08/02 22:31:15] d2.utils.events INFO:  eta: 1 day, 23:08:01  iter: 199  total_loss: 2.007  loss_cls: 0.3665  loss_box_reg: 0.3656  loss_mask: 0.5907  loss_rpn_cls: 0.2967  loss_rpn_loc: 0.3975    time: 0.9235  last_time: 0.9363  data_time: 0.0068  last_data_time: 0.0071   lr: 7.962e-05  max_mem: 38002M
+[08/02 22:31:34] d2.utils.events INFO:  eta: 1 day, 23:14:41  iter: 219  total_loss: 2.162  loss_cls: 0.4324  loss_box_reg: 0.428  loss_mask: 0.5571  loss_rpn_cls: 0.2649  loss_rpn_loc: 0.3826    time: 0.9247  last_time: 0.9030  data_time: 0.0068  last_data_time: 0.0063   lr: 8.7612e-05  max_mem: 38172M
+[08/02 22:31:53] d2.utils.events INFO:  eta: 1 day, 23:19:54  iter: 239  total_loss: 2.029  loss_cls: 0.3901  loss_box_reg: 0.4291  loss_mask: 0.5268  loss_rpn_cls: 0.2595  loss_rpn_loc: 0.3681    time: 0.9257  last_time: 0.9431  data_time: 0.0066  last_data_time: 0.0073   lr: 9.5604e-05  max_mem: 38172M
+[08/02 22:32:11] d2.utils.events INFO:  eta: 1 day, 23:20:48  iter: 259  total_loss: 1.888  loss_cls: 0.3595  loss_box_reg: 0.4788  loss_mask: 0.5125  loss_rpn_cls: 0.2386  loss_rpn_loc: 0.3805    time: 0.9263  last_time: 0.9252  data_time: 0.0070  last_data_time: 0.0082   lr: 0.0001  max_mem: 38172M
+[08/02 22:32:30] d2.utils.events INFO:  eta: 1 day, 23:21:17  iter: 279  total_loss: 1.809  loss_cls: 0.3773  loss_box_reg: 0.425  loss_mask: 0.5199  loss_rpn_cls: 0.2102  loss_rpn_loc: 0.3247    time: 0.9264  last_time: 0.9089  data_time: 0.0068  last_data_time: 0.0075   lr: 0.0001  max_mem: 38172M
+[08/02 22:32:49] d2.utils.events INFO:  eta: 1 day, 23:21:51  iter: 299  total_loss: 1.953  loss_cls: 0.3867  loss_box_reg: 0.5055  loss_mask: 0.4748  loss_rpn_cls: 0.2197  loss_rpn_loc: 0.381    time: 0.9269  last_time: 0.9502  data_time: 0.0069  last_data_time: 0.0064   lr: 0.0001  max_mem: 38172M
+[08/02 22:33:07] d2.utils.events INFO:  eta: 1 day, 23:22:46  iter: 319  total_loss: 1.977  loss_cls: 0.4019  loss_box_reg: 0.6277  loss_mask: 0.4305  loss_rpn_cls: 0.2011  loss_rpn_loc: 0.3093    time: 0.9278  last_time: 0.9550  data_time: 0.0067  last_data_time: 0.0068   lr: 0.0001  max_mem: 38194M
+[08/02 22:33:26] d2.utils.events INFO:  eta: 1 day, 23:24:03  iter: 339  total_loss: 1.976  loss_cls: 0.4028  loss_box_reg: 0.5218  loss_mask: 0.4451  loss_rpn_cls: 0.221  loss_rpn_loc: 0.2856    time: 0.9291  last_time: 0.9241  data_time: 0.0070  last_data_time: 0.0069   lr: 0.0001  max_mem: 38195M
+[08/02 22:33:45] d2.utils.events INFO:  eta: 1 day, 23:25:14  iter: 359  total_loss: 1.846  loss_cls: 0.3675  loss_box_reg: 0.5185  loss_mask: 0.3954  loss_rpn_cls: 0.2031  loss_rpn_loc: 0.3168    time: 0.9296  last_time: 0.9472  data_time: 0.0073  last_data_time: 0.0076   lr: 0.0001  max_mem: 38195M
+[08/02 22:34:04] d2.utils.events INFO:  eta: 1 day, 23:27:36  iter: 379  total_loss: 1.833  loss_cls: 0.3811  loss_box_reg: 0.5524  loss_mask: 0.3968  loss_rpn_cls: 0.1765  loss_rpn_loc: 0.2539    time: 0.9301  last_time: 0.9668  data_time: 0.0073  last_data_time: 0.0075   lr: 0.0001  max_mem: 38195M
+[08/02 22:34:23] d2.utils.events INFO:  eta: 1 day, 23:30:25  iter: 399  total_loss: 1.849  loss_cls: 0.3549  loss_box_reg: 0.5721  loss_mask: 0.4096  loss_rpn_cls: 0.1816  loss_rpn_loc: 0.2756    time: 0.9309  last_time: 0.9214  data_time: 0.0075  last_data_time: 0.0088   lr: 0.0001  max_mem: 38195M
+[08/02 22:34:42] d2.utils.events INFO:  eta: 1 day, 23:35:45  iter: 419  total_loss: 1.832  loss_cls: 0.3815  loss_box_reg: 0.6271  loss_mask: 0.3743  loss_rpn_cls: 0.1929  loss_rpn_loc: 0.3075    time: 0.9319  last_time: 0.9365  data_time: 0.0073  last_data_time: 0.0072   lr: 0.0001  max_mem: 38195M
+[08/02 22:35:01] d2.utils.events INFO:  eta: 1 day, 23:39:41  iter: 439  total_loss: 1.941  loss_cls: 0.3844  loss_box_reg: 0.6126  loss_mask: 0.4001  loss_rpn_cls: 0.191  loss_rpn_loc: 0.3051    time: 0.9331  last_time: 0.9511  data_time: 0.0074  last_data_time: 0.0065   lr: 0.0001  max_mem: 38195M
+[08/02 22:35:20] d2.utils.events INFO:  eta: 1 day, 23:42:38  iter: 459  total_loss: 1.743  loss_cls: 0.3691  loss_box_reg: 0.5616  loss_mask: 0.4036  loss_rpn_cls: 0.1843  loss_rpn_loc: 0.3066    time: 0.9339  last_time: 0.9417  data_time: 0.0072  last_data_time: 0.0085   lr: 0.0001  max_mem: 38195M
+[08/02 22:35:39] d2.utils.events INFO:  eta: 1 day, 23:43:25  iter: 479  total_loss: 1.625  loss_cls: 0.3378  loss_box_reg: 0.5092  loss_mask: 0.3499  loss_rpn_cls: 0.1719  loss_rpn_loc: 0.2641    time: 0.9342  last_time: 0.9294  data_time: 0.0070  last_data_time: 0.0062   lr: 0.0001  max_mem: 38195M
+[08/02 22:35:58] d2.utils.events INFO:  eta: 1 day, 23:44:54  iter: 499  total_loss: 1.743  loss_cls: 0.3734  loss_box_reg: 0.5635  loss_mask: 0.3363  loss_rpn_cls: 0.1565  loss_rpn_loc: 0.3046    time: 0.9348  last_time: 0.9294  data_time: 0.0071  last_data_time: 0.0074   lr: 0.0001  max_mem: 38195M
+[08/02 22:36:17] d2.utils.events INFO:  eta: 1 day, 23:45:23  iter: 519  total_loss: 1.697  loss_cls: 0.3263  loss_box_reg: 0.5151  loss_mask: 0.3635  loss_rpn_cls: 0.172  loss_rpn_loc: 0.2942    time: 0.9351  last_time: 0.9440  data_time: 0.0071  last_data_time: 0.0073   lr: 0.0001  max_mem: 38195M
+[08/02 22:36:36] d2.utils.events INFO:  eta: 1 day, 23:46:35  iter: 539  total_loss: 1.829  loss_cls: 0.3497  loss_box_reg: 0.5544  loss_mask: 0.3693  loss_rpn_cls: 0.1618  loss_rpn_loc: 0.3072    time: 0.9356  last_time: 0.9579  data_time: 0.0069  last_data_time: 0.0083   lr: 0.0001  max_mem: 38195M
+[08/02 22:36:55] d2.utils.events INFO:  eta: 1 day, 23:46:50  iter: 559  total_loss: 1.767  loss_cls: 0.3567  loss_box_reg: 0.502  loss_mask: 0.3608  loss_rpn_cls: 0.1608  loss_rpn_loc: 0.2776    time: 0.9358  last_time: 0.9252  data_time: 0.0068  last_data_time: 0.0056   lr: 0.0001  max_mem: 38195M
+[08/02 22:37:13] d2.utils.events INFO:  eta: 1 day, 23:46:56  iter: 579  total_loss: 1.66  loss_cls: 0.3461  loss_box_reg: 0.4767  loss_mask: 0.3766  loss_rpn_cls: 0.1561  loss_rpn_loc: 0.262    time: 0.9359  last_time: 0.9271  data_time: 0.0070  last_data_time: 0.0064   lr: 0.0001  max_mem: 38195M
+[08/02 22:37:32] d2.utils.events INFO:  eta: 1 day, 23:48:12  iter: 599  total_loss: 1.73  loss_cls: 0.3713  loss_box_reg: 0.5345  loss_mask: 0.3418  loss_rpn_cls: 0.1837  loss_rpn_loc: 0.3271    time: 0.9364  last_time: 0.9321  data_time: 0.0066  last_data_time: 0.0067   lr: 0.0001  max_mem: 38195M
+[08/02 22:37:51] d2.utils.events INFO:  eta: 1 day, 23:48:53  iter: 619  total_loss: 1.713  loss_cls: 0.3722  loss_box_reg: 0.4844  loss_mask: 0.3474  loss_rpn_cls: 0.1349  loss_rpn_loc: 0.2514    time: 0.9366  last_time: 0.9503  data_time: 0.0069  last_data_time: 0.0066   lr: 0.0001  max_mem: 38195M
+[08/02 22:38:10] d2.utils.events INFO:  eta: 1 day, 23:48:47  iter: 639  total_loss: 1.692  loss_cls: 0.3889  loss_box_reg: 0.4932  loss_mask: 0.3423  loss_rpn_cls: 0.1236  loss_rpn_loc: 0.2772    time: 0.9369  last_time: 0.9646  data_time: 0.0069  last_data_time: 0.0061   lr: 0.0001  max_mem: 38195M
+[08/02 22:38:29] d2.utils.events INFO:  eta: 1 day, 23:49:20  iter: 659  total_loss: 1.533  loss_cls: 0.3396  loss_box_reg: 0.4526  loss_mask: 0.3379  loss_rpn_cls: 0.141  loss_rpn_loc: 0.2481    time: 0.9371  last_time: 0.9836  data_time: 0.0072  last_data_time: 0.0116   lr: 0.0001  max_mem: 38195M
+[08/02 22:38:48] d2.utils.events INFO:  eta: 1 day, 23:49:35  iter: 679  total_loss: 1.598  loss_cls: 0.3213  loss_box_reg: 0.4799  loss_mask: 0.3654  loss_rpn_cls: 0.1566  loss_rpn_loc: 0.2526    time: 0.9375  last_time: 0.9657  data_time: 0.0079  last_data_time: 0.0176   lr: 0.0001  max_mem: 38195M

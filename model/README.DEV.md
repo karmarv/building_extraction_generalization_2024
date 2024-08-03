@@ -1,4 +1,4 @@
-### Experiments
+## (A.) MMDetection
 
 #### Run - RTMDet-S-Instance
 ```
@@ -63,3 +63,28 @@ CUDA_VISIBLE_DEVICES=6,7 PORT=29601 ./tools/dist_train.sh rtmdet_ins_l_beg.py 2
 
 - [0.55853] - v1 `python test_results.py  ../../dataset/coco/test/image  ./rtmdet_ins_m_beg.py  ./work_dirs/rtmdet_ins_m_beg/epoch_100.pth  --out-dir ./work_dirs/rtmdet_ins_m_beg/beg_test/  --to-labelme `
 - [] - v2 `python test_results.py  ../../dataset/coco/test/image  ./rtmdet_ins_s_beg.py  ./work_dirs/rtmdet_ins_s_beg/epoch_300.pth  --out-dir ./work_dirs/rtmdet_ins_s_beg/beg_test/  --to-labelme `
+
+
+
+
+
+## (B.) Detectron2
+All configs can be trained with:
+- `pip install timm==0.4.12` # Do not use fix_timm_model_layers file from MAE
+```bash
+# Install it from a local clone:
+git clone https://github.com/facebookresearch/detectron2.git
+python -m pip install -e detectron2
+```
+
+#### Run - ViTDet 
+```
+cd ./detectron2/projects/ViTDet
+CUDA_VISIBLE_DEVICES=4 ../../tools/lazyconfig_train_net.py --config configs/COCO/mask_rcnn_vitdet_b_100ep_beg.py
+```
+
+#### Run - MViT2
+```
+cd ./detectron2/projects/MViTv2
+CUDA_VISIBLE_DEVICES=5 ../../tools/lazyconfig_train_net.py --config configs/mask_rcnn_mvitv2_t_3x_beg.py
+```

@@ -14,11 +14,11 @@ dict(type='WandbVisBackend', init_kwargs={
 # Train & Val - https://github.com/open-mmlab/mmdetection/blob/main/demo/MMDet_InstanceSeg_Tutorial.ipynb
 #
 
-max_epochs = 100
+max_epochs = 300
 interval = 5
 stage2_num_epochs = 20
 # Batch size of a single GPU during training
-train_batch_size_per_gpu = 12
+train_batch_size_per_gpu = 10
 val_batch_size_per_gpu = train_batch_size_per_gpu
 
 # -----data related-----
