@@ -1,4 +1,18 @@
-## (A.) MMDetection
+## Inference & Submissions
+Exported the submissions CSV in the following order
+cd mmdetection
+- [0.55853] - v1 `python test_results.py  ../../dataset/coco/test/image  ./rtmdet_ins_m_beg.py  ./work_dirs/rtmdet_ins_m_beg/epoch_100.pth  --out-dir ./work_dirs/rtmdet_ins_m_beg/beg_test/  --to-labelme `
+- [0.57086] - v2 `python test_results.py  ../../dataset/coco/test/image  ./rtmdet_ins_s_beg.py  ./work_dirs/rtmdet_ins_s_beg/epoch_300.pth  --out-dir ./work_dirs/rtmdet_ins_s_beg/beg_test/  --to-labelme `
+- [0.56499] - v3 `python test_results.py  ../../dataset/coco/test/image  ./rtmdet_ins_m_beg.py  ./work_dirs/rtmdet_ins_m_beg/epoch_300.pth  --out-dir ./work_dirs/rtmdet_ins_m_beg/beg_test/  --to-labelme `
+
+Detectron2
+cd ./detectron2/projects/MViTv2
+CUDA_VISIBLE_DEVICES=6 ../../tools/lazyconfig_train_net.py --config-file configs/mask_rcnn_mvitv2_t_3x_beg.py --eval-only train.init_checkpoint=output_mask_rcnn_mvitv2_t_3x_beg_b8/model_final.pth
+
+cd ./detectron2/projects/MViTv2
+CUDA_VISIBLE_DEVICES=6 ../../tools/lazyconfig_train_net.py --config configs/mask_rcnn_mvitv2_t_3x_beg.py
+
+## (A.) MMDetection [./mmdetection](./mmdetection)
 
 #### Run - RTMDet-S-Instance
 ```
@@ -59,16 +73,10 @@ CUDA_VISIBLE_DEVICES=6,7 PORT=29601 ./tools/dist_train.sh rtmdet_ins_l_beg.py 2
 
 
 
-### Inference & Submissions
-
-- [0.55853] - v1 `python test_results.py  ../../dataset/coco/test/image  ./rtmdet_ins_m_beg.py  ./work_dirs/rtmdet_ins_m_beg/epoch_100.pth  --out-dir ./work_dirs/rtmdet_ins_m_beg/beg_test/  --to-labelme `
-- [] - v2 `python test_results.py  ../../dataset/coco/test/image  ./rtmdet_ins_s_beg.py  ./work_dirs/rtmdet_ins_s_beg/epoch_300.pth  --out-dir ./work_dirs/rtmdet_ins_s_beg/beg_test/  --to-labelme `
 
 
 
-
-
-## (B.) Detectron2
+## (B.) Detectron2 [./detectron2](./detectron2)
 All configs can be trained with:
 - `pip install timm==0.4.12` # Do not use fix_timm_model_layers file from MAE
 ```bash
@@ -84,7 +92,45 @@ CUDA_VISIBLE_DEVICES=4 ../../tools/lazyconfig_train_net.py --config configs/COCO
 ```
 
 #### Run - MViT2
+- T
 ```
 cd ./detectron2/projects/MViTv2
 CUDA_VISIBLE_DEVICES=5 ../../tools/lazyconfig_train_net.py --config configs/mask_rcnn_mvitv2_t_3x_beg.py
+```
+- B
+```
+cd ./detectron2/projects/MViTv2
+CUDA_VISIBLE_DEVICES=5 ../../tools/lazyconfig_train_net.py --config configs/cascade_mask_rcnn_mvitv2_b_3x_beg.py
+```
+
+
+## (C.) SAM [./segment-anything](./segment-anything)
+
+- Install Python and CUDA 11.8
+```
+wget https://developer.download.nvidia.com/compute/cuda/11.8.0/local_installers/cuda_11.8.0_520.61.05_linux.run
+# Ensure you dont install default and provide the /usr/local/cuda-11.8/ path in the install options
+sudo sh cuda_11.8.0_520.61.05_linux.run
+```
+  - Environment variables
+  ```
+  export CUDA_HOME=/usr/local/cuda-11.8/
+  export PATH=/usr/local/cuda-11.8/bin:$PATH
+  export LD_LIBRARY_PATH=/usr/local/cuda-11.8/lib64:$LD_LIBRARY_PATH
+  ```
+  - Test
+  ```
+  python -c 'import torch; from torch.utils.cpp_extension import CUDA_HOME; print(torch.cuda.is_available(), CUDA_HOME)'
+  ```
+  - Python environment
+  ```
+  conda env remove -n sam
+  conda create -n sam python=3.10
+  # Ensure CUDA 11.8
+  pip install -r ../../requirements.txt
+  ```
+
+```
+CUDA_VISIBLE_DEVICES=5 
+python scripts/amg.py --checkpoint sam_vit_b_01ec64.pth --model-type vit_b --input /home/rahul/workspace/vision/beg24/building_extraction_generalization_2024/dataset/coco/test/image/ --output beg_test_sam/
 ```

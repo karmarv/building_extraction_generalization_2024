@@ -20,7 +20,8 @@ register_coco_instances("beg_train", {}, os.path.join(data_root,"train/train.jso
                                             os.path.join(data_root,"train"))
 register_coco_instances("beg_val", {}, os.path.join(data_root,"val/val.json"), 
                                             os.path.join(data_root,"val"))
-
+register_coco_instances("beg_test", {}, os.path.join(data_root,"test/test.json"), 
+                                            os.path.join(data_root,"test"))
 
 model = model_zoo.get_config("common/models/mask_rcnn_fpn.py").model
 constants = model_zoo.get_config("common/data/constants.py").constants
@@ -49,7 +50,7 @@ train.init_checkpoint = "detectron2://ImageNetPretrained/mvitv2/MViTv2_T_in1k.py
 
 # Data loaders
 dataloader.train.dataset.names = "beg_train"
-dataloader.test.dataset.names = "beg_val"
+dataloader.test.dataset.names = "beg_test" # Canged for test evaluation
 dataloader.train.total_batch_size = 8
 
 
