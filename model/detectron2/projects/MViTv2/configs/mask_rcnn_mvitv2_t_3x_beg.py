@@ -50,8 +50,9 @@ train.init_checkpoint = "detectron2://ImageNetPretrained/mvitv2/MViTv2_T_in1k.py
 
 # Data loaders
 dataloader.train.dataset.names = "beg_train"
-dataloader.test.dataset.names = "beg_test" # Canged for test evaluation
+dataloader.test.dataset.names  = "beg_test"      # "beg_val"  # Changed for test report submission
 dataloader.train.total_batch_size = 8
+
 
 
 # 36 epochs

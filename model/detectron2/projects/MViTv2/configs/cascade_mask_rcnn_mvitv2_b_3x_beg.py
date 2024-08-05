@@ -14,7 +14,8 @@ register_coco_instances("beg_train", {}, os.path.join(data_root,"train/train.jso
                                             os.path.join(data_root,"train"))
 register_coco_instances("beg_val", {}, os.path.join(data_root,"val/val.json"), 
                                             os.path.join(data_root,"val"))
-
+register_coco_instances("beg_test", {}, os.path.join(data_root,"test/test.json"), 
+                                            os.path.join(data_root,"test"))
 
 
 model.backbone.bottom_up.depth = 24
@@ -25,5 +26,5 @@ train.init_checkpoint = "detectron2://ImageNetPretrained/mvitv2/MViTv2_B_in1k.py
 
 # Data loaders
 dataloader.train.dataset.names = "beg_train"
-dataloader.test.dataset.names = "beg_val"
+dataloader.test.dataset.names  = "beg_test"      # "beg_val"  # Changed for test report submission
 dataloader.train.total_batch_size = 4
