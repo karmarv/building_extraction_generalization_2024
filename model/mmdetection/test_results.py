@@ -131,38 +131,37 @@ def main():
         if args.to_labelme:
             #print(pred_instances)
             # Add results to CSV file
-            polygon = []
+            pred_polygons = []
             image_id = os.path.basename(file)
             for idx, pred in enumerate(pred_instances):
                 masks = pred.masks.cpu().numpy().astype("uint8")
-                if np.sum(masks==1): # if mask is not empty - i.e. filled with zeros only, then proceed
+                scores = pred.scores.tolist()
+                if np.sum(masks==1) and scores[0]>0.1: # if mask is not empty - i.e. filled with zeros only, then proceed and scores[0]>0.1
                     masks_img = np.array(masks*255, dtype = np.uint8)
                     gray_img = Image.fromarray(masks_img[0], mode='L')
                     #print(gray_img.size, np.unique(masks_img))
-                    contours, _ = cv2.findContours(image=np.array(gray_img, dtype = np.uint8), mode=cv2.RETR_EXTERNAL, method=cv2.CHAIN_APPROX_TC89_L1 )
+                    # CHAIN_APPROX_SIMPLE, CHAIN_APPROX_TC89_L1
+                    contours, _ = cv2.findContours(image=np.array(gray_img, dtype = np.uint8),
+                                                   mode=cv2.RETR_EXTERNAL,
+                                                   method=cv2.CHAIN_APPROX_TC89_L1 )
                     # Improve contour - Watershed or Arc approximation [https://pyimagesearch.com/2021/10/06/opencv-contour-approximation/]
-                    cv2.drawContours(img, contours, -1, (0,0,255), 1)
 
-                    #contours = measure.find_contours(np.array(gray_img), level=0.8)
-                    contour_per_pred = []
-                    for idx, item in enumerate(contours): # Taking the first polygon bound 
-                        #print(idx, "-->", len(item))
-                        points = [tuple((pt[0][0], pt[0][1])) for pt in item]
-                        contour_per_pred.extend(points)
+                    # Get max contour area
+                    cont = max(contours, key = cv2.contourArea)
+                    points = [tuple((pt[0][0], pt[0][1])) for pt in cont]
+                    # converting list to array
+                    points_arr = np.array(points)
+                    cv2.polylines(img,[points_arr.reshape((-1,1,2))], True, (0,255,0), 1)
+                    cv2.drawContours(img, cont, -1, (0,0,255), 1)                            
+                    #print(" Score:", scores, "\tMasks(len):",  len(contour_per_pred), "\tMasks(5 pts):",  contour_per_pred[:5])
                     # Add contour to the list
-                    polygon.append(contour_per_pred)
-                    scores = pred.scores.tolist()
-                    #bboxes = pred.bboxes.tolist()
-                    #labels = pred.labels.tolist()
-                    #print(" Score:", scores[0], "\tMasks(len):",  len(contour_per_pred), "\tMasks(5 pts):",  contour_per_pred[:5])
-                    
+                    pred_polygons.append(points)                    
+
             # Result row item format as per https://www.kaggle.com/competitions/building-extraction-generalization-2024/data
-            #beg_results.append([image_id[:-4], polygon])
             beg_results_dict["ImageID"].append(int(image_id[:-4]))
-            beg_results_dict["Coordinates"].append(polygon)
-            
-            
-            if len(polygon)>0:
+            beg_results_dict["Coordinates"].append(pred_polygons)
+                        
+            if len(pred_polygons)>0:
                 mmcv.imwrite(img, os.path.join(args.out_dir, "pred_{}.jpg".format(image_id)))
                 #print(beg_results_dict)
                 #exit(0)
@@ -175,7 +174,7 @@ def main():
         # TODO: Add these to pandas dataframe
         results_df = pd.DataFrame({ 'ImageID': beg_results_dict["ImageID"], 'Coordinates': beg_results_dict["Coordinates"] })
         results_df = results_df.sort_values(by=["ImageID"], ascending=True)
-        results_df.to_csv(os.path.join(args.out_dir, "..", "beg_test_l1.df.csv"), index=False)
+        results_df.to_csv(os.path.join(args.out_dir, "..", "beg_test_l1.sv2.csv"), index=False)
 
 
 if __name__ == '__main__':

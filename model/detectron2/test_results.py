@@ -53,6 +53,8 @@ def main():
 
     # get file list
     test_images_path = "/home/rahul/workspace/vision/beg24/building_extraction_generalization_2024/dataset/coco/test/image/"
+    test_output_path = "./output/images"
+    os.makedirs(os.path.dirname(test_output_path), exist_ok=True)
     files = os.listdir(test_images_path)
     beg_results_dict = {"ImageID": [], "Coordinates": []}
     # evaluate model:
@@ -72,34 +74,45 @@ def main():
             # Read each mask in prediction
             for pred_mask, score in zip(pred_instances.pred_masks, pred_instances.scores):
                 masks = pred_mask.cpu().numpy().astype("uint8")
-                if np.sum(masks==1) and score>0.5: # if mask is not empty - i.e. filled with zeros only, then proceed
+                score = score.cpu().numpy()
+                if np.sum(masks==1) and score>0.1: # if mask is not empty - i.e. filled with zeros only, then proceed and score>0.45
                     masks_img = np.array(masks*255, dtype = np.uint8)
-                    #print(masks_img.shape, np.unique(masks_img))
                     gray_img = Image.fromarray(masks_img, mode='L')
                     #print(gray_img.size)
-                    contours, _ = cv2.findContours(image=np.array(gray_img, dtype = np.uint8), mode=cv2.RETR_EXTERNAL, method=cv2.CHAIN_APPROX_TC89_L1 )
+                    # CHAIN_APPROX_SIMPLE, CHAIN_APPROX_TC89_L1
+                    contours, _ = cv2.findContours(image=np.array(gray_img, dtype = np.uint8),
+                                                   mode=cv2.RETR_EXTERNAL,
+                                                   method=cv2.CHAIN_APPROX_TC89_L1)
                     # Improve contour - Watershed or Arc approximation [https://pyimagesearch.com/2021/10/06/opencv-contour-approximation/]
-                    cv2.drawContours(img, contours, -1, (0,0,255), 1)
 
                     #contours = measure.find_contours(np.array(gray_img), level=0.8)
-                    contour_per_pred = []
-                    for item in contours: # Taking the first polygon bound 
-                        #print("-->", len(item))
-                        points = [tuple((pt[0][0], pt[0][1])) for pt in item]
-                        contour_per_pred.extend(points)
+                    #contour_per_pred = []
+                    #for item in contours: # Taking the first polygon bound 
+                    #    points = [tuple((pt[0][0], pt[0][1])) for pt in item]
+                    #    contour_per_pred.extend(points)
+                    
+                    # Get max contour area
+                    cont = max(contours, key = cv2.contourArea)
+                    points = [tuple((pt[0][0], pt[0][1])) for pt in cont]
+                    #contour_per_pred.extend(points)
+                    # converting list to array
+                    points_arr = np.array(points)
+                    cv2.polylines(img,[points_arr.reshape((-1,1,2))], True, (0,255,0), 1)
+                    cv2.drawContours(img, cont, -1, (0,0,255), 1)
+
                     # Add contour to the list
-                    pred_polygons.append(contour_per_pred)
-                    #print("\tScore:", score, "\tMasks(len):",  len(contour_per_pred), "\tMasks(5 pts):",  contour_per_pred[:5])
+                    pred_polygons.append(points)
+                    #print("\tScore:", score, "\tMasks(len):",  len(points), "\tMasks(5 pts):",  points[:5])
 
             # Result row item format as per https://www.kaggle.com/competitions/building-extraction-generalization-2024/data
             beg_results_dict["ImageID"].append(int(image_id[:-4]))
             beg_results_dict["Coordinates"].append(pred_polygons)
-            mmcv.imwrite(img, os.path.join("./output", "pred_{}.jpg".format(image_id)))
+            mmcv.imwrite(img, os.path.join(test_output_path, "pred_{}.jpg".format(image_id)))
 
         # Add these to pandas dataframe
         results_df = pd.DataFrame({ 'ImageID': beg_results_dict["ImageID"], 'Coordinates': beg_results_dict["Coordinates"] })
         results_df = results_df.sort_values(by=["ImageID"], ascending=True)
-        results_df.to_csv(os.path.join("./output", "beg_test_d2.v2.csv"), index=False)
+        results_df.to_csv(os.path.join(os.path.dirname(test_output_path), "beg_test_d2.v2.csv"), index=False)
             
 
 

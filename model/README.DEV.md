@@ -1,18 +1,26 @@
 ## Inference & Submissions
 Exported the submissions CSV in the following order
-cd mmdetection
-- [0.55853] - v1 `python test_results.py  ../../dataset/coco/test/image  ./rtmdet_ins_m_beg.py  ./work_dirs/rtmdet_ins_m_beg/epoch_100.pth  --out-dir ./work_dirs/rtmdet_ins_m_beg/beg_test/  --to-labelme `
-- [0.57086] - v2 `python test_results.py  ../../dataset/coco/test/image  ./rtmdet_ins_s_beg.py  ./work_dirs/rtmdet_ins_s_beg/epoch_300.pth  --out-dir ./work_dirs/rtmdet_ins_s_beg/beg_test/  --to-labelme `
-- [0.56499] - v3 `python test_results.py  ../../dataset/coco/test/image  ./rtmdet_ins_m_beg.py  ./work_dirs/rtmdet_ins_m_beg/epoch_300.pth  --out-dir ./work_dirs/rtmdet_ins_m_beg/beg_test/  --to-labelme `
-- [] - D2 V1 ``
-- [] - D2 V2 ``
+> cd ./mmdetection
+- [0.55853] - MM v1 `python test_results.py  ../../dataset/coco/test/image  ./rtmdet_ins_m_beg.py  ./work_dirs/rtmdet_ins_m_beg/epoch_100.pth  --out-dir ./work_dirs/rtmdet_ins_m_beg/beg_test/  --to-labelme `
+- [0.57086] - MM v2 `python test_results.py  ../../dataset/coco/test/image  ./rtmdet_ins_s_beg.py  ./work_dirs/rtmdet_ins_s_beg/epoch_300.pth  --out-dir ./work_dirs/rtmdet_ins_s_beg/beg_test/  --to-labelme `
+- [0.56499] - MM v3 `python test_results.py  ../../dataset/coco/test/image  ./rtmdet_ins_m_beg.py  ./work_dirs/rtmdet_ins_m_beg/epoch_300.pth  --out-dir ./work_dirs/rtmdet_ins_m_beg/beg_test/  --to-labelme `
+
+> cd ./detectron2/projects/MViTv2
+- [Error] - D2 V1 `CUDA_VISIBLE_DEVICES=6 python test_results.py --config-file projects/MViTv2/configs/mask_rcnn_mvitv2_t_3x_beg.py --eval-only train.init_checkpoint=projects/MViTv2/output_mask_rcnn_mvitv2_t_3x_beg_b8/model_final.pth`
+- [Error] - D2 V2 `CUDA_VISIBLE_DEVICES=6 python test_results.py --config-file projects/MViTv2/configs/cascade_mask_rcnn_mvitv2_b_3x_beg.py --eval-only train.init_checkpoint=projects/MViTv2/output_cascade_mask_rcnn_mvitv2_b_3x_beg_b4/model_final.pth`
+
+> SAM - Refine bounding box using prompts from submission CSV file
+- [] - MMV2 SAM `CUDA_VISIBLE_DEVICES=6 time python test_results.py`
+- [] - D2V2 SAM `CUDA_VISIBLE_DEVICES=6 time python test_results.py` 
+
+> Refining team submissions
+- [] - Pierre SAM "20240810-submission_a-pierre65.csv"            > Submit this
+- [] - Masato SAM "20240809-submissions-dets-masato66.csv"
+
 
 Detectron2
-cd ./detectron2/projects/MViTv2
 CUDA_VISIBLE_DEVICES=6 ../../tools/lazyconfig_train_net.py --config-file configs/mask_rcnn_mvitv2_t_3x_beg.py --eval-only train.init_checkpoint=output_mask_rcnn_mvitv2_t_3x_beg_b8/model_final.pth
 
-cd ./detectron2/projects/MViTv2
-CUDA_VISIBLE_DEVICES=6 ../../tools/lazyconfig_train_net.py --config configs/mask_rcnn_mvitv2_t_3x_beg.py
 
 ## (A.) MMDetection [./mmdetection](./mmdetection)
 
@@ -92,6 +100,17 @@ python -m pip install -e detectron2
 cd ./detectron2/projects/ViTDet
 CUDA_VISIBLE_DEVICES=4 ../../tools/lazyconfig_train_net.py --config configs/COCO/mask_rcnn_vitdet_b_100ep_beg.py
 ```
+  - epoch 100 training
+  ```
+  [08/05 00:51:44 d2.evaluation.coco_evaluation]: Evaluation results for bbox:
+  |   AP   |  AP50  |  AP75  |  APs   |  APm   |  APl   |
+  |:------:|:------:|:------:|:------:|:------:|:------:|
+  | 55.111 | 80.552 | 63.306 | 45.362 | 66.867 | 70.534 |
+  [08/05 00:51:47 d2.evaluation.coco_evaluation]: Evaluation results for segm:
+  |   AP   |  AP50  |  AP75  |  APs   |  APm   |  APl   |
+  |:------:|:------:|:------:|:------:|:------:|:------:|
+  | 55.380 | 80.492 | 63.252 | 42.700 | 67.634 | 71.464 |
+  ```
 
 #### Run - MViT2
 - Tiny
@@ -99,6 +118,10 @@ CUDA_VISIBLE_DEVICES=4 ../../tools/lazyconfig_train_net.py --config configs/COCO
 cd ./detectron2/projects/MViTv2
 CUDA_VISIBLE_DEVICES=5 ../../tools/lazyconfig_train_net.py --config configs/mask_rcnn_mvitv2_t_3x_beg.py
 ```
+  - Training epoch 100
+  ```
+
+  ```
   - Inference
   ```
   CUDA_VISIBLE_DEVICES=6 python test_results.py --config-file projects/MViTv2/configs/mask_rcnn_mvitv2_t_3x_beg.py --eval-only train.init_checkpoint=projects/MViTv2/output_mask_rcnn_mvitv2_t_3x_beg_b8/model_final.pth
@@ -108,6 +131,17 @@ CUDA_VISIBLE_DEVICES=5 ../../tools/lazyconfig_train_net.py --config configs/mask
 cd ./detectron2/projects/MViTv2
 CUDA_VISIBLE_DEVICES=5 ../../tools/lazyconfig_train_net.py --config configs/cascade_mask_rcnn_mvitv2_b_3x_beg.py
 ```
+  - Training epoch 
+  ```
+  [08/04 09:28:55 d2.evaluation.coco_evaluation]: Evaluation results for bbox:
+  |   AP   |  AP50  |  AP75  |  APs   |  APm   |  APl   |
+  |:------:|:------:|:------:|:------:|:------:|:------:|
+  | 57.918 | 79.891 | 66.135 | 48.049 | 69.837 | 71.994 |
+  [08/04 09:28:58 d2.evaluation.coco_evaluation]: Evaluation results for segm:
+  |   AP   |  AP50  |  AP75  |  APs   |  APm   |  APl   |
+  |:------:|:------:|:------:|:------:|:------:|:------:|
+  | 55.249 | 79.828 | 63.713 | 42.622 | 67.512 | 70.429 |
+  ```
   - Inference
   ```
   CUDA_VISIBLE_DEVICES=6 python test_results.py --config-file projects/MViTv2/configs/cascade_mask_rcnn_mvitv2_b_3x_beg.py --eval-only train.init_checkpoint=projects/MViTv2/output_cascade_mask_rcnn_mvitv2_b_3x_beg_b4/model_final.pth

@@ -17,6 +17,10 @@ Strategy
 - Approach ensemble for improved detections
 - Add other tricks - https://github.com/open-mmlab/mmyolo/blob/main/docs/en/recommended_topics/training_testing_tricks.md
 
+- Pretraining with public dataset - https://github.com/chrieke/awesome-satellite-imagery-datasets
+  - Instance Building 2D - https://californiachen.github.io/datasets/InstanceBuilding
+  - OmniCity dataset download not working
+
 
 
 
