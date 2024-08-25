@@ -32,6 +32,18 @@ Strategy
   conda activate segm
   pip install -r requirements.txt
   ```
+- Setup CUDA environment
+  ```
+  export CUDA_HOME="/usr/local/cuda"
+  #export CUDA_HOME="/usr/local/cuda-12.1"
+  #export CUDA_HOME="/usr/local/cuda-11.8"
+  export PATH=$CUDA_HOME/bin:$PATH
+  export LD_LIBRARY_PATH=$CUDA_HOME/lib64:$LD_LIBRARY_PATH
+  ```
+  ```bash
+  # Test CUDA with new PyTorch 2.x
+  python -c 'import torch; from torch.utils.cpp_extension import CUDA_HOME; print(torch.__version__, torch.cuda.is_available(), CUDA_HOME)'
+  ```
 - MMDetection environment
   ```bash
   pip install -U openmim wandb future tensorboard prettytable

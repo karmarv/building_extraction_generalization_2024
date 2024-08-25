@@ -28,9 +28,13 @@ terminaltables
 #torch==1.13.1+cu116 
 #torchvision==0.14.1+cu116
 
---extra-index-url https://download.pytorch.org/whl/cu118
-torch==2.3.1
-torchvision==0.18.1
+#--extra-index-url https://download.pytorch.org/whl/cu118
+#torch==2.3.1
+#torchvision==0.18.1
+
+--extra-index-url https://download.pytorch.org/whl/cu124
+torch
+torchvision
 
 #--extra-index-url https://download.pytorch.org/whl/cu121
 #torch==2.3.1

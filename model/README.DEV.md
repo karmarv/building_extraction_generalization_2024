@@ -24,6 +24,12 @@ CUDA_VISIBLE_DEVICES=6 ../../tools/lazyconfig_train_net.py --config-file configs
 
 ## (A.) MMDetection [./mmdetection](./mmdetection)
 
+#### Run - Mask2Former 
+```
+# Multi 4 GPU # XXX hours for b20 300 epochs
+CUDA_VISIBLE_DEVICES=0,1,2,3 PORT=29601 ./tools/dist_train.sh mask2former_swin_be.py 4
+```
+
 #### Run - RTMDet-S-Instance
 ```
 # Multi 4 GPU # XXX hours for b12 300 epochs
@@ -159,9 +165,11 @@ sudo sh cuda_11.8.0_520.61.05_linux.run
 ```
   - Environment variables
   ```
-  export CUDA_HOME=/usr/local/cuda-11.8/
-  export PATH=/usr/local/cuda-11.8/bin:$PATH
-  export LD_LIBRARY_PATH=/usr/local/cuda-11.8/lib64:$LD_LIBRARY_PATH
+  #export CUDA_HOME="/usr/local/cuda"     # 12.4
+  export CUDA_HOME="/usr/local/cuda-12.1"
+  #export CUDA_HOME="/usr/local/cuda-11.8"
+  export PATH=$CUDA_HOME/bin:$PATH
+  export LD_LIBRARY_PATH=$CUDA_HOME/lib64:$LD_LIBRARY_PATH
   ```
   - Test
   ```
