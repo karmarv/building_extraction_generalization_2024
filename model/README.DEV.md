@@ -187,3 +187,28 @@ sudo sh cuda_11.8.0_520.61.05_linux.run
 CUDA_VISIBLE_DEVICES=5 
 python scripts/amg.py --checkpoint sam_vit_b_01ec64.pth --model-type vit_b --input /home/rahul/workspace/vision/beg24/building_extraction_generalization_2024/dataset/coco/test/image/ --output beg_test_sam/
 ```
+
+
+### SAM2 [./sam2](./sam2)
+
+  - Environment variables
+  ```
+  export CUDA_HOME="/usr/local/cuda-12.1"     # 12.1
+  export PATH=$CUDA_HOME/bin:$PATH
+  export LD_LIBRARY_PATH=$CUDA_HOME/lib64:$LD_LIBRARY_PATH
+  ```
+
+  - Python environment
+  ```
+  conda env remove -n sam2
+  conda create -n sam2 python=3.10 -y
+  # Ensure CUDA 12.1
+  pip install -r requirements.txt
+  # verify
+  python -c 'import torch; from torch.utils.cpp_extension import CUDA_HOME; print(torch.__version__, torch.cuda.is_available(), CUDA_HOME)'
+  ```
+  - Install Sam2
+  ```
+  pip install -e .
+  pip install -e ".[demo]"
+  ```
